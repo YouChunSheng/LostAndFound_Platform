@@ -191,7 +191,20 @@
                     </div>
                     <div class="col-md-3">
                         <label for="location" class="form-label">丢失地点</label>
-                        <input type="text" class="form-control" id="location" name="location" placeholder="地点" value="${param.location}">
+                        <input type="text" class="form-control" id="location" name="location" placeholder="地点（如：教学楼、宿舍等）" value="${param.location}" list="locations">
+                        <datalist id="locations">
+                            <option value="教学楼">
+                            <option value="实验楼">
+                            <option value="图书馆">
+                            <option value="宿舍">
+                            <option value="食堂">
+                            <option value="体育馆">
+                            <option value="校医院">
+                            <option value="行政楼">
+                            <option value="超市">
+                            <option value="校门">
+                            <option value="其他">
+                        </datalist>
                     </div>
                     <div class="col-md-2">
                         <label for="dateFrom" class="form-label">丢失日期从</label>

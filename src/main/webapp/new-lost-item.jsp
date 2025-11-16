@@ -109,56 +109,17 @@
                             <label for="lostLocation" class="form-label">丢失地点</label>
                             <input type="text" class="form-control" id="lostLocation" name="lostLocation" required list="locations">
                             <datalist id="locations">
-                                <optgroup label="一、二期区域 - 学生生活与运动区">
-                                    <option value="学生宿舍8栋">
-                                    <option value="学生宿舍9栋">
-                                    <option value="学生宿舍10栋">
-                                    <option value="学生宿舍11栋">
-                                    <option value="学生宿舍12栋">
-                                    <option value="学生宿舍13栋">
-                                    <option value="第二饭堂">
-                                    <option value="运动场">
-                                    <option value="运动场看台">
-                                    <option value="篮球场">
-                                    <option value="北门2">
-                                </optgroup>
-                                <optgroup label="未开放区域">
-                                    <option value="未开放区域">
-                                    <option value="未开放水域">
-                                </optgroup>
-                                <optgroup label="中部区域 - 教学与科研区">
-                                    <option value="图书馆">
-                                    <option value="公共实验楼">
-                                    <option value="软件学院">
-                                    <option value="健康学院">
-                                    <option value="护理学院">
-                                    <option value="公共教学楼">
-                                    <option value="行政楼">
-                                    <option value="北正门">
-                                </optgroup>
-                                <optgroup label="一期区域 - 学生生活与功能区">
-                                    <option value="学生宿舍1栋">
-                                    <option value="学生宿舍2栋">
-                                    <option value="学生宿舍3栋">
-                                    <option value="学生宿舍4栋">
-                                    <option value="学生宿舍5栋">
-                                    <option value="学生宿舍6栋">
-                                    <option value="学生宿舍7栋">
-                                    <option value="第一饭堂">
-                                    <option value="南药中心">
-                                    <option value="创新创业大楼">
-                                    <option value="联盟大楼交流中心">
-                                    <option value="会议中心">
-                                    <option value="排球场">
-                                    <option value="网球场">
-                                    <option value="篮球场">
-                                    <option value="西门">
-                                    <option value="北门1">
-                                    <option value="广东药科大学公交站">
-                                </optgroup>
-                                <optgroup label="其他">
-                                    <option value="其他地点">
-                                </optgroup>
+                                <option value="教学楼">
+                                <option value="实验楼">
+                                <option value="图书馆">
+                                <option value="宿舍">
+                                <option value="食堂">
+                                <option value="体育馆">
+                                <option value="校医院">
+                                <option value="行政楼">
+                                <option value="超市">
+                                <option value="校门">
+                                <option value="其他">
                             </datalist>
                         </div>
                         <div class="mb-3">
