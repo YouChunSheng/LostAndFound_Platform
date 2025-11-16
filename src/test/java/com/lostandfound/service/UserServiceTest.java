@@ -21,8 +21,9 @@ public class UserServiceTest {
         connection = DatabaseConnection.getConnection();
         userService = new UserService(connection);
         
-        // Create a test user
-        testUser = new User("testuser", "testpass", "test@example.com", "1234567890");
+        // Create a unique test user with timestamp in username
+        long timestamp = System.currentTimeMillis();
+        testUser = new User("testuser" + timestamp, "testpass", "test@example.com", "1234567890");
     }
 
     @After
@@ -45,7 +46,7 @@ public class UserServiceTest {
         userService.registerUser(testUser);
         
         // Try to register the same username again
-        User duplicateUser = new User("testuser", "anotherpass", "another@example.com", "0987654321");
+        User duplicateUser = new User(testUser.getUsername(), "anotherpass", "another@example.com", "0987654321");
         boolean result = userService.registerUser(duplicateUser);
         assertFalse("Duplicate user registration should fail", result);
     }
@@ -56,12 +57,12 @@ public class UserServiceTest {
         userService.registerUser(testUser);
         
         // Test login with correct credentials
-        User loggedInUser = userService.loginUser("testuser", "testpass");
+        User loggedInUser = userService.loginUser(testUser.getUsername(), "testpass");
         assertNotNull("User should be able to login with correct credentials", loggedInUser);
-        assertEquals("Username should match", "testuser", loggedInUser.getUsername());
+        assertEquals("Username should match", testUser.getUsername(), loggedInUser.getUsername());
         
         // Test login with incorrect password
-        User invalidUser = userService.loginUser("testuser", "wrongpass");
+        User invalidUser = userService.loginUser(testUser.getUsername(), "wrongpass");
         assertNull("User should not be able to login with wrong password", invalidUser);
         
         // Test login with non-existing user
@@ -78,6 +79,6 @@ public class UserServiceTest {
         User foundUser = userService.getUserById(testUser.getId());
         assertNotNull("User should be found by ID", foundUser);
         assertEquals("User ID should match", testUser.getId(), foundUser.getId());
-        assertEquals("Username should match", "testuser", foundUser.getUsername());
+        assertEquals("Username should match", testUser.getUsername(), foundUser.getUsername());
     }
 }

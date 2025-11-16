@@ -42,6 +42,11 @@ public class FileUploadUtil {
             
             // 保存文件
             String filePath = Paths.get(uploadPath, UPLOAD_DIR, uniqueFileName).toString();
+            // 确保父目录存在
+            File parentDir = new File(filePath).getParentFile();
+            if (!parentDir.exists()) {
+                parentDir.mkdirs();
+            }
             part.write(filePath);
             
             // 返回相对路径

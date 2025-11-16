@@ -96,7 +96,17 @@ public class LostItemServlet extends HttpServlet {
                 String category = request.getParameter("category");
                 String lostLocation = request.getParameter("lostLocation");
                 String lostTimeString = request.getParameter("lostTime");
-                LocalDateTime lostTime = LocalDateTime.parse(lostTimeString);
+                LocalDateTime lostTime = null;
+                if (lostTimeString != null && !lostTimeString.isEmpty()) {
+                    try {
+                        lostTime = LocalDateTime.parse(lostTimeString.replace("T", " ")+":00");
+                    } catch (Exception e) {
+                        // Handle the exception or set to current time
+                        lostTime = LocalDateTime.now();
+                    }
+                } else {
+                    lostTime = LocalDateTime.now();
+                }
                 String contactInfo = request.getParameter("contactInfo");
 
                 LostItem lostItem = new LostItem();

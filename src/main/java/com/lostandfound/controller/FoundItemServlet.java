@@ -94,7 +94,17 @@ public class FoundItemServlet extends HttpServlet {
                 String category = request.getParameter("category");
                 String foundLocation = request.getParameter("foundLocation");
                 String foundTimeString = request.getParameter("foundTime");
-                LocalDateTime foundTime = LocalDateTime.parse(foundTimeString);
+                LocalDateTime foundTime = null;
+                if (foundTimeString != null && !foundTimeString.isEmpty()) {
+                    try {
+                        foundTime = LocalDateTime.parse(foundTimeString.replace("T", " ")+":00");
+                    } catch (Exception e) {
+                        // Handle the exception or set to current time
+                        foundTime = LocalDateTime.now();
+                    }
+                } else {
+                    foundTime = LocalDateTime.now();
+                }
                 String contactInfo = request.getParameter("contactInfo");
 
                 FoundItem foundItem = new FoundItem();

@@ -310,22 +310,40 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // 视图切换功能
+        function setView(view) {
+            if (view === 'list') {
+                document.getElementById('list-view').style.display = 'flex';
+                document.getElementById('masonry-view').style.display = 'none';
+                document.getElementById('list-view-btn').classList.remove('btn-outline-primary');
+                document.getElementById('list-view-btn').classList.add('btn-primary');
+                document.getElementById('masonry-view-btn').classList.remove('btn-primary');
+                document.getElementById('masonry-view-btn').classList.add('btn-outline-primary');
+                // 保存用户偏好
+                localStorage.setItem('lostItemsView', 'list');
+            } else {
+                document.getElementById('list-view').style.display = 'none';
+                document.getElementById('masonry-view').style.display = 'grid';
+                document.getElementById('masonry-view-btn').classList.remove('btn-outline-primary');
+                document.getElementById('masonry-view-btn').classList.add('btn-primary');
+                document.getElementById('list-view-btn').classList.remove('btn-primary');
+                document.getElementById('list-view-btn').classList.add('btn-outline-primary');
+                // 保存用户偏好
+                localStorage.setItem('lostItemsView', 'masonry');
+            }
+        }
+        
         document.getElementById('list-view-btn').addEventListener('click', function() {
-            document.getElementById('list-view').style.display = 'flex';
-            document.getElementById('masonry-view').style.display = 'none';
-            this.classList.remove('btn-outline-primary');
-            this.classList.add('btn-primary');
-            document.getElementById('masonry-view-btn').classList.remove('btn-primary');
-            document.getElementById('masonry-view-btn').classList.add('btn-outline-primary');
+            setView('list');
         });
         
         document.getElementById('masonry-view-btn').addEventListener('click', function() {
-            document.getElementById('list-view').style.display = 'none';
-            document.getElementById('masonry-view').style.display = 'grid';
-            this.classList.remove('btn-outline-primary');
-            this.classList.add('btn-primary');
-            document.getElementById('list-view-btn').classList.remove('btn-primary');
-            document.getElementById('list-view-btn').classList.add('btn-outline-primary');
+            setView('masonry');
+        });
+        
+        // 页面加载时恢复用户偏好设置
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('lostItemsView') || 'list';
+            setView(savedView);
         });
     </script>
 </body>
