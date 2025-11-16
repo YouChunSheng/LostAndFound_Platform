@@ -118,7 +118,24 @@
                 <form class="row g-3" method="get" action="lost-items">
                     <div class="col-md-4">
                         <label for="keyword" class="form-label">关键词</label>
-                        <input type="text" class="form-control" id="keyword" name="keyword" placeholder="标题或描述" value="${param.keyword}">
+                        <input type="text" class="form-control" id="keyword" name="keyword" placeholder="标题或描述" value="${param.keyword}" list="keywords">
+                        <datalist id="keywords">
+                            <option value="手机">
+                            <option value="钱包">
+                            <option value="钥匙">
+                            <option value="身份证">
+                            <option value="学生证">
+                            <option value="银行卡">
+                            <option value="耳机">
+                            <option value="U盘">
+                            <option value="笔记本电脑">
+                            <option value="平板电脑">
+                            <option value="书本">
+                            <option value="眼镜">
+                            <option value="手表">
+                            <option value="外套">
+                            <option value="雨伞">
+                        </datalist>
                     </div>
                     <div class="col-md-3">
                         <label for="category" class="form-label">分类</label>
@@ -133,7 +150,59 @@
                     </div>
                     <div class="col-md-3">
                         <label for="location" class="form-label">丢失地点</label>
-                        <input type="text" class="form-control" id="location" name="location" placeholder="地点" value="${param.location}">
+                        <input type="text" class="form-control" id="location" name="location" placeholder="地点" value="${param.location}" list="locations">
+                        <datalist id="locations">
+                            <optgroup label="一、二期区域 - 学生生活与运动区">
+                                <option value="学生宿舍8栋">
+                                <option value="学生宿舍9栋">
+                                <option value="学生宿舍10栋">
+                                <option value="学生宿舍11栋">
+                                <option value="学生宿舍12栋">
+                                <option value="学生宿舍13栋">
+                                <option value="第二饭堂">
+                                <option value="运动场">
+                                <option value="运动场看台">
+                                <option value="篮球场">
+                                <option value="北门2">
+                            </optgroup>
+                            <optgroup label="未开放区域">
+                                <option value="未开放区域">
+                                <option value="未开放水域">
+                            </optgroup>
+                            <optgroup label="中部区域 - 教学与科研区">
+                                <option value="图书馆">
+                                <option value="公共实验楼">
+                                <option value="软件学院">
+                                <option value="健康学院">
+                                <option value="护理学院">
+                                <option value="公共教学楼">
+                                <option value="行政楼">
+                                <option value="北正门">
+                            </optgroup>
+                            <optgroup label="一期区域 - 学生生活与功能区">
+                                <option value="学生宿舍1栋">
+                                <option value="学生宿舍2栋">
+                                <option value="学生宿舍3栋">
+                                <option value="学生宿舍4栋">
+                                <option value="学生宿舍5栋">
+                                <option value="学生宿舍6栋">
+                                <option value="学生宿舍7栋">
+                                <option value="第一饭堂">
+                                <option value="南药中心">
+                                <option value="创新创业大楼">
+                                <option value="联盟大楼交流中心">
+                                <option value="会议中心">
+                                <option value="排球场">
+                                <option value="网球场">
+                                <option value="篮球场">
+                                <option value="西门">
+                                <option value="北门1">
+                                <option value="广东药科大学公交站">
+                            </optgroup>
+                            <optgroup label="其他">
+                                <option value="其他地点">
+                            </optgroup>
+                        </datalist>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">搜索</button>
