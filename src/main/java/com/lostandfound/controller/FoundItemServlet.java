@@ -4,13 +4,17 @@ import com.lostandfound.model.FoundItem;
 import com.lostandfound.model.User;
 import com.lostandfound.service.FoundItemService;
 import com.lostandfound.utils.DatabaseConnection;
+import com.lostandfound.utils.FileUploadUtil;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,6 +22,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @WebServlet("/found-items/*")
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
+    maxFileSize = 1024 * 1024 * 10,       // 10MB
+    maxRequestSize = 1024 * 1024 * 50     // 50MB
+)
 public class FoundItemServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -96,7 +105,17 @@ public class FoundItemServlet extends HttpServlet {
                 foundItem.setFoundLocation(foundLocation);
                 foundItem.setFoundTime(foundTime);
                 foundItem.setContactInfo(contactInfo);
-                // Image upload would be handled here in a real application
+                
+                // 处理图片上传
+                Part imagePart = request.getPart("image");
+                if (imagePart != null && imagePart.getSize() > 0) {
+                    // 获取上传路径
+                    String uploadPath = getServletContext().getRealPath("");
+                    String imagePath = FileUploadUtil.saveImageFile(imagePart, uploadPath);
+                    if (imagePath != null) {
+                        foundItem.setImageUrl(imagePath);
+                    }
+                }
 
                 boolean created = foundItemService.createFoundItem(foundItem);
                 if (created) {
@@ -108,6 +127,9 @@ public class FoundItemServlet extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendRedirect("found-items/new?error=database_error");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("found-items/new?error=upload_failed");
         }
     }
 }

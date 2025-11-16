@@ -30,6 +30,11 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="#">欢迎, ${sessionScope.user.username}</a>
                             </li>
+                            <c:if test="${sessionScope.user.role == 'admin'}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="admin/">管理员</a>
+                                </li>
+                            </c:if>
                             <li class="nav-item">
                                 <a class="nav-link" href="logout">退出</a>
                             </li>
@@ -55,6 +60,11 @@
                     <h2>${lostItem.title}</h2>
                 </div>
                 <div class="card-body">
+                    <c:if test="${lostItem.imageUrl != null && !empty lostItem.imageUrl}">
+                        <div class="text-center mb-3">
+                            <img src="${lostItem.imageUrl}" alt="物品图片" class="img-fluid" style="max-height: 300px;">
+                        </div>
+                    </c:if>
                     <p class="card-text">${lostItem.description}</p>
                     
                     <h5>详细信息</h5>
@@ -88,6 +98,14 @@
                     </c:if>
                     <c:if test="${sessionScope.user != null && sessionScope.user.id != lostItem.userId}">
                         <a href="#" class="btn btn-success w-100">我捡到了这个物品</a>
+                    </c:if>
+                    <!-- 管理员额外操作 -->
+                    <c:if test="${sessionScope.user != null && sessionScope.user.role == 'admin'}">
+                        <div class="mt-3">
+                            <h6>管理员操作</h6>
+                            <a href="#" class="btn btn-warning w-100 mb-2">编辑信息(管理员)</a>
+                            <a href="#" class="btn btn-danger w-100">删除信息(管理员)</a>
+                        </div>
                     </c:if>
                 </div>
             </div>
