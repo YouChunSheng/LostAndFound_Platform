@@ -61,11 +61,13 @@
                                 信息发布失败，请稍后再试
                             <% } else if (request.getParameter("error").equals("database_error")) { %>
                                 数据库错误，请稍后再试
+                            <% } else if (request.getParameter("error").equals("upload_failed")) { %>
+                                图片上传失败，请稍后再试
                             <% } %>
                         </div>
                     <% } %>
 
-                    <form action="found-items" method="post">
+                    <form action="found-items" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="create">
                         <div class="mb-3">
                             <label for="title" class="form-label">标题</label>
@@ -97,6 +99,10 @@
                         <div class="mb-3">
                             <label for="contactInfo" class="form-label">联系方式</label>
                             <input type="text" class="form-control" id="contactInfo" name="contactInfo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">物品图片</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">发布</button>

@@ -95,6 +95,9 @@
         <c:forEach var="item" items="${lostItems}">
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
+                    <c:if test="${item.imageUrl != null && !empty item.imageUrl}">
+                        <img src="${item.imageUrl}" class="card-img-top" alt="${item.title}" style="height: 200px; object-fit: cover;">
+                    </c:if>
                     <div class="card-body">
                         <h5 class="card-title">${item.title}</h5>
                         <p class="card-text">${item.description}</p>
