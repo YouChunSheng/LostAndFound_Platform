@@ -40,8 +40,10 @@ public class LostItemServlet extends HttpServlet {
                 String keyword = request.getParameter("keyword");
                 String category = request.getParameter("category");
                 String location = request.getParameter("location");
+                String dateFrom = request.getParameter("dateFrom");
+                String dateTo = request.getParameter("dateTo");
                 
-                List<LostItem> lostItems = lostItemService.searchLostItems(keyword, category, location);
+                List<LostItem> lostItems = lostItemService.searchLostItems(keyword, category, location, dateFrom, dateTo);
                 request.setAttribute("lostItems", lostItems);
                 request.getRequestDispatcher("/lost-items.jsp").forward(request, response);
             } else if (pathInfo.equals("/new")) {

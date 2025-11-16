@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>失物信息 - 失物招领平台</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             font-family: "Microsoft YaHei", Arial, sans-serif;
@@ -55,6 +56,46 @@
         .page-item.active .page-link {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             border-color: #2575fc;
+        }
+        
+        /* 瀑布流布局样式 */
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+        }
+        
+        .view-toggle {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .view-btn {
+            margin-left: 10px;
+        }
+        
+        .masonry-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .masonry-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .masonry-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -116,7 +157,7 @@
         <div class="card search-card mt-4">
             <div class="card-body">
                 <form class="row g-3" method="get" action="lost-items">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="keyword" class="form-label">关键词</label>
                         <input type="text" class="form-control" id="keyword" name="keyword" placeholder="标题或描述" value="${param.keyword}" list="keywords">
                         <datalist id="keywords">
@@ -137,7 +178,7 @@
                             <option value="雨伞">
                         </datalist>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="category" class="form-label">分类</label>
                         <select class="form-select" id="category" name="category">
                             <option value="">全部分类</option>
@@ -150,64 +191,32 @@
                     </div>
                     <div class="col-md-3">
                         <label for="location" class="form-label">丢失地点</label>
-                        <input type="text" class="form-control" id="location" name="location" placeholder="地点" value="${param.location}" list="locations">
-                        <datalist id="locations">
-                            <optgroup label="一、二期区域 - 学生生活与运动区">
-                                <option value="学生宿舍8栋">
-                                <option value="学生宿舍9栋">
-                                <option value="学生宿舍10栋">
-                                <option value="学生宿舍11栋">
-                                <option value="学生宿舍12栋">
-                                <option value="学生宿舍13栋">
-                                <option value="第二饭堂">
-                                <option value="运动场">
-                                <option value="运动场看台">
-                                <option value="篮球场">
-                                <option value="北门2">
-                            </optgroup>
-                            <optgroup label="未开放区域">
-                                <option value="未开放区域">
-                                <option value="未开放水域">
-                            </optgroup>
-                            <optgroup label="中部区域 - 教学与科研区">
-                                <option value="图书馆">
-                                <option value="公共实验楼">
-                                <option value="软件学院">
-                                <option value="健康学院">
-                                <option value="护理学院">
-                                <option value="公共教学楼">
-                                <option value="行政楼">
-                                <option value="北正门">
-                            </optgroup>
-                            <optgroup label="一期区域 - 学生生活与功能区">
-                                <option value="学生宿舍1栋">
-                                <option value="学生宿舍2栋">
-                                <option value="学生宿舍3栋">
-                                <option value="学生宿舍4栋">
-                                <option value="学生宿舍5栋">
-                                <option value="学生宿舍6栋">
-                                <option value="学生宿舍7栋">
-                                <option value="第一饭堂">
-                                <option value="南药中心">
-                                <option value="创新创业大楼">
-                                <option value="联盟大楼交流中心">
-                                <option value="会议中心">
-                                <option value="排球场">
-                                <option value="网球场">
-                                <option value="篮球场">
-                                <option value="西门">
-                                <option value="北门1">
-                                <option value="广东药科大学公交站">
-                            </optgroup>
-                            <optgroup label="其他">
-                                <option value="其他地点">
-                            </optgroup>
-                        </datalist>
+                        <input type="text" class="form-control" id="location" name="location" placeholder="地点" value="${param.location}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="dateFrom" class="form-label">丢失日期从</label>
+                        <input type="date" class="form-control" id="dateFrom" name="dateFrom" value="${param.dateFrom}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="dateTo" class="form-label">丢失日期至</label>
+                        <input type="date" class="form-control" id="dateTo" name="dateTo" value="${param.dateTo}">
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">搜索</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- 视图切换按钮 -->
+        <div class="view-toggle">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary view-btn" id="list-view-btn">
+                    <i class="fas fa-list"></i> 列表视图
+                </button>
+                <button type="button" class="btn btn-outline-primary view-btn" id="masonry-view-btn">
+                    <i class="fas fa-th-large"></i> 瀑布流视图
+                </button>
             </div>
         </div>
 
@@ -217,7 +226,8 @@
             </div>
         </c:if>
 
-        <div class="row mt-4">
+        <!-- 列表视图 -->
+        <div id="list-view" class="row mt-4">
             <c:forEach var="item" items="${lostItems}">
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
@@ -232,6 +242,32 @@
                                 <li><strong>丢失地点:</strong> ${item.lostLocation}</li>
                                 <li><strong>丢失时间:</strong> ${item.lostTime}</li>
                                 <li><strong>联系方式:</strong> ${item.contactInfo}</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">发布于 ${item.createdAt}</small>
+                            <a href="lost-items/detail?id=${item.id}" class="btn btn-sm btn-outline-primary float-end">查看详情</a>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+
+        <!-- 瀑布流视图 -->
+        <div id="masonry-view" class="masonry-grid" style="display: none;">
+            <c:forEach var="item" items="${lostItems}">
+                <div class="masonry-item">
+                    <div class="card masonry-card">
+                        <c:if test="${item.imageUrl != null && !empty item.imageUrl}">
+                            <img src="${item.imageUrl}" class="card-img-top" alt="${item.title}">
+                        </c:if>
+                        <div class="card-body">
+                            <h5 class="card-title">${item.title}</h5>
+                            <p class="card-text">${item.description}</p>
+                            <ul class="list-unstyled">
+                                <li><strong>分类:</strong> ${item.category}</li>
+                                <li><strong>丢失地点:</strong> ${item.lostLocation}</li>
+                                <li><strong>丢失时间:</strong> ${item.lostTime}</li>
                             </ul>
                         </div>
                         <div class="card-footer">
@@ -259,5 +295,25 @@
         </nav>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 视图切换功能
+        document.getElementById('list-view-btn').addEventListener('click', function() {
+            document.getElementById('list-view').style.display = 'flex';
+            document.getElementById('masonry-view').style.display = 'none';
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-primary');
+            document.getElementById('masonry-view-btn').classList.remove('btn-primary');
+            document.getElementById('masonry-view-btn').classList.add('btn-outline-primary');
+        });
+        
+        document.getElementById('masonry-view-btn').addEventListener('click', function() {
+            document.getElementById('list-view').style.display = 'none';
+            document.getElementById('masonry-view').style.display = 'grid';
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-primary');
+            document.getElementById('list-view-btn').classList.remove('btn-primary');
+            document.getElementById('list-view-btn').classList.add('btn-outline-primary');
+        });
+    </script>
 </body>
 </html>

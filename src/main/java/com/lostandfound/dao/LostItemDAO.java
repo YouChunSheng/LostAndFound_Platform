@@ -121,6 +121,11 @@ public class LostItemDAO {
     
     // Search lost items with keyword, category and location
     public List<LostItem> searchLostItems(String keyword, String category, String location) throws SQLException {
+        return searchLostItems(keyword, category, location, null, null);
+    }
+    
+    // Search lost items with additional date range filters
+    public List<LostItem> searchLostItems(String keyword, String category, String location, String dateFrom, String dateTo) throws SQLException {
         List<LostItem> lostItems = new ArrayList<>();
         
         StringBuilder sql = new StringBuilder("SELECT * FROM lost_items WHERE 1=1");
@@ -132,6 +137,12 @@ public class LostItemDAO {
         }
         if (location != null && !location.isEmpty()) {
             sql.append(" AND lost_location LIKE ?");
+        }
+        if (dateFrom != null && !dateFrom.isEmpty()) {
+            sql.append(" AND DATE(lost_time) >= ?");
+        }
+        if (dateTo != null && !dateTo.isEmpty()) {
+            sql.append(" AND DATE(lost_time) <= ?");
         }
         sql.append(" ORDER BY created_at DESC");
         
@@ -146,6 +157,12 @@ public class LostItemDAO {
             }
             if (location != null && !location.isEmpty()) {
                 statement.setString(paramIndex++, "%" + location + "%");
+            }
+            if (dateFrom != null && !dateFrom.isEmpty()) {
+                statement.setString(paramIndex++, dateFrom);
+            }
+            if (dateTo != null && !dateTo.isEmpty()) {
+                statement.setString(paramIndex++, dateTo);
             }
             
             ResultSet resultSet = statement.executeQuery();

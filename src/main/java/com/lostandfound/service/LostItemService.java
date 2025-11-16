@@ -38,4 +38,9 @@ public class LostItemService {
     public List<LostItem> searchLostItems(String keyword, String category, String location) throws SQLException {
         return lostItemDAO.searchLostItems(keyword, category, location);
     }
+    
+    // Search lost items with additional date range filters
+    public List<LostItem> searchLostItems(String keyword, String category, String location, String dateFrom, String dateTo) throws SQLException {
+        return lostItemDAO.searchLostItems(keyword, category, location, dateFrom, dateTo);
+    }
 }
