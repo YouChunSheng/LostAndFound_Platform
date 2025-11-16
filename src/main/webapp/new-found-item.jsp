@@ -90,7 +90,20 @@
                         </div>
                         <div class="mb-3">
                             <label for="foundLocation" class="form-label">拾取地点</label>
-                            <input type="text" class="form-control" id="foundLocation" name="foundLocation" required>
+                            <input type="text" class="form-control" id="foundLocation" name="foundLocation" required list="locations">
+                            <datalist id="locations">
+                                <option value="教学楼">
+                                <option value="实验楼">
+                                <option value="图书馆">
+                                <option value="宿舍">
+                                <option value="食堂">
+                                <option value="体育馆">
+                                <option value="校医院">
+                                <option value="行政楼">
+                                <option value="超市">
+                                <option value="校门">
+                                <option value="其他">
+                            </datalist>
                         </div>
                         <div class="mb-3">
                             <label for="foundTime" class="form-label">拾取时间</label>
