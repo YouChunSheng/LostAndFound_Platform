@@ -27,8 +27,6 @@
                                 用户名或密码错误
                             <% } else if (request.getParameter("error").equals("database_error")) { %>
                                 数据库错误，请稍后再试
-                            <% } else if (request.getParameter("error").equals("invalid_captcha")) { %>
-                                验证码错误，请重新输入
                             <% } %>
                         </div>
                     <% } %>
@@ -41,13 +39,6 @@
                         <div class="mb-3">
                             <label for="password" class="form-label">密码</label>
                             <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="captcha" class="form-label">验证码</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="captcha" name="captcha" required>
-                                <img src="captcha" id="captchaImage" alt="验证码" class="rounded" style="cursor: pointer; height: 40px;" title="点击刷新验证码">
-                            </div>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">登录</button>
@@ -62,11 +53,5 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // 点击验证码图片刷新验证码
-    document.getElementById('captchaImage').onclick = function() {
-        this.src = 'captcha?' + Math.random();
-    };
-</script>
 </body>
 </html>

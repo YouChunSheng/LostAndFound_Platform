@@ -2,7 +2,6 @@ package com.lostandfound.controller;
 
 import com.lostandfound.model.User;
 import com.lostandfound.service.UserService;
-import com.lostandfound.utils.CaptchaUtil;
 import com.lostandfound.utils.DatabaseConnection;
 
 import javax.servlet.ServletException;
@@ -21,13 +20,8 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String captcha = request.getParameter("captcha");
 
-        // 验证验证码 - 临时注释掉方便自动化脚本测试
-        // if (!CaptchaUtil.validateCaptcha(request, captcha)) {
-        //     response.sendRedirect("login.jsp?error=invalid_captcha");
-        //     return;
-        // }
+        // 移除了验证码验证，因为我们已经从页面上完全移除了验证码功能
 
         try (Connection connection = DatabaseConnection.getConnection()) {
             UserService userService = new UserService(connection);
