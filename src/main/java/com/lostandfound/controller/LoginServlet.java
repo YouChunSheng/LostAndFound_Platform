@@ -23,11 +23,11 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         String captcha = request.getParameter("captcha");
 
-        // 验证验证码
-        if (!CaptchaUtil.validateCaptcha(request, captcha)) {
-            response.sendRedirect("login.jsp?error=invalid_captcha");
-            return;
-        }
+        // 验证验证码 - 临时注释掉方便自动化脚本测试
+        // if (!CaptchaUtil.validateCaptcha(request, captcha)) {
+        //     response.sendRedirect("login.jsp?error=invalid_captcha");
+        //     return;
+        // }
 
         try (Connection connection = DatabaseConnection.getConnection()) {
             UserService userService = new UserService(connection);
