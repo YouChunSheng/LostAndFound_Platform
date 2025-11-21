@@ -1,14 +1,13 @@
 import os
 import random
 import time
+import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 
 # 预设数据
 ITEM_NAMES = [
@@ -54,7 +53,6 @@ def generate_random_datetime():
     生成随机的日期时间字符串
     """
     # 生成最近30天内的随机日期
-    import datetime
     now = datetime.datetime.now()
     random_days = random.randint(0, 30)
     random_date = now - datetime.timedelta(days=random_days)
@@ -79,11 +77,8 @@ def auto_fill_lost_item_form(base_url="http://localhost:8080/LostAndFound_Platfo
     # chrome_options.add_argument("--headless")
     
     try:
-        # 自动下载并安装ChromeDriver
-        service = Service(ChromeDriverManager().install())
-        
-        # 初始化WebDriver
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        # 初始化WebDriver（请根据您的Chrome版本调整chromedriver路径）
+        driver = webdriver.Chrome(options=chrome_options)
         wait = WebDriverWait(driver, 10)
         
         # 访问登录页面
