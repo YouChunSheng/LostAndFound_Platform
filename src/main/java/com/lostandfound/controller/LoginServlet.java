@@ -2,6 +2,7 @@ package com.lostandfound.controller;
 
 import com.lostandfound.model.User;
 import com.lostandfound.service.UserService;
+import com.lostandfound.utils.CaptchaUtil;
 import com.lostandfound.utils.DatabaseConnection;
 
 import javax.servlet.ServletException;
@@ -20,6 +21,13 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String captcha = request.getParameter("captcha");
+
+        // 验证验证码
+        if (!CaptchaUtil.validateCaptcha(request, captcha)) {
+            response.sendRedirect("login.jsp?error=invalid_captcha");
+            return;
+        }
 
         try (Connection connection = DatabaseConnection.getConnection()) {
             UserService userService = new UserService(connection);
