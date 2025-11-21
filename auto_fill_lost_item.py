@@ -50,7 +50,7 @@ def get_next_photo_path(photo_dir="photo"):
 
 def generate_random_datetime():
     """
-    生成随机的日期时间字符串
+    生成随机的日期时间字符串，符合HTML datetime-local格式 (YYYY-MM-DDTHH:MM)
     """
     # 生成最近30天内的随机日期
     now = datetime.datetime.now()
@@ -61,7 +61,7 @@ def generate_random_datetime():
     random_hour = random.randint(8, 22)
     random_minute = random.randint(0, 59)
     
-    # 格式化为HTML datetime-local格式
+    # 格式化为HTML datetime-local格式 (YYYY-MM-DDTHH:MM)
     return random_date.strftime(f"%Y-%m-%dT{random_hour:02d}:{random_minute:02d}")
 
 def auto_fill_lost_item_form(base_url="https://localhost:8090/lostandfound"):
