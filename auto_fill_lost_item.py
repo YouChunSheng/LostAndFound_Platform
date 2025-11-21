@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 # 预设数据
 ITEM_NAMES = [
@@ -78,8 +79,11 @@ def auto_fill_lost_item_form(base_url="http://localhost:8080/LostAndFound_Platfo
     # chrome_options.add_argument("--headless")
     
     try:
-        # 初始化WebDriver（请根据您的Chrome版本调整chromedriver路径）
-        driver = webdriver.Chrome(options=chrome_options)
+        # 自动下载并安装ChromeDriver
+        service = Service(ChromeDriverManager().install())
+        
+        # 初始化WebDriver
+        driver = webdriver.Chrome(service=service, options=chrome_options)
         wait = WebDriverWait(driver, 10)
         
         # 访问登录页面
@@ -90,16 +94,17 @@ def auto_fill_lost_item_form(base_url="http://localhost:8080/LostAndFound_Platfo
         driver.find_element(By.ID, "username").send_keys("user1")
         driver.find_element(By.ID, "password").send_keys("user123")
         
+        # 注释掉验证码相关代码，因为我们已经禁用了服务器端的验证码验证
         # 等待并获取验证码图片
-        captcha_img = wait.until(EC.presence_of_element_located((By.ID, "captchaImage")))
-        print("请手动输入验证码，程序将等待30秒...")
+        # captcha_img = wait.until(EC.presence_of_element_located((By.ID, "captchaImage")))
+        # print("请手动输入验证码，程序将等待30秒...")
         
         # 点击验证码图片刷新验证码（如果需要）
-        captcha_img.click()
-        time.sleep(1)
+        # captcha_img.click()
+        # time.sleep(1)
         
         # 等待用户手动输入验证码
-        time.sleep(30)
+        # time.sleep(30)
         
         # 提交登录表单
         driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
