@@ -64,7 +64,7 @@ def generate_random_datetime():
     # 格式化为HTML datetime-local格式
     return random_date.strftime(f"%Y-%m-%dT{random_hour:02d}:{random_minute:02d}")
 
-def auto_fill_lost_item_form(base_url="http://localhost:8080/LostAndFound_Platform"):
+def auto_fill_lost_item_form(base_url="https://localhost:8090/lostandfound"):
     """
     自动填写失物信息表单
     """
@@ -72,6 +72,8 @@ def auto_fill_lost_item_form(base_url="http://localhost:8080/LostAndFound_Platfo
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--ignore-certificate-errors")  # 忽略SSL证书错误
+    chrome_options.add_argument("--ignore-ssl-errors")          # 忽略SSL错误
     
     # 如果需要无头模式（不显示浏览器窗口），取消下面这行注释
     # chrome_options.add_argument("--headless")
@@ -140,7 +142,7 @@ def auto_fill_lost_item_form(base_url="http://localhost:8080/LostAndFound_Platfo
         
         # 上传图片（如果有）
         photo_path = get_next_photo_path()
-        if photo_path:
+        if photo_path and os.path.exists(photo_path):
             driver.find_element(By.ID, "image").send_keys(os.path.abspath(photo_path))
             print(f"已选择图片: {photo_path}")
         else:
