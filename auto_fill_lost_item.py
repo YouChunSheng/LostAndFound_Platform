@@ -91,18 +91,6 @@ def auto_fill_lost_item_form(base_url="https://localhost:8090/lostandfound"):
         driver.find_element(By.ID, "username").send_keys("user1")
         driver.find_element(By.ID, "password").send_keys("user123")
         
-        # 注释掉验证码相关代码，因为我们已经禁用了服务器端的验证码验证
-        # 等待并获取验证码图片
-        # captcha_img = wait.until(EC.presence_of_element_located((By.ID, "captchaImage")))
-        # print("请手动输入验证码，程序将等待30秒...")
-        
-        # 点击验证码图片刷新验证码（如果需要）
-        # captcha_img.click()
-        # time.sleep(1)
-        
-        # 等待用户手动输入验证码
-        # time.sleep(30)
-        
         # 提交登录表单
         driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
         time.sleep(3)
@@ -135,7 +123,9 @@ def auto_fill_lost_item_form(base_url="https://localhost:8090/lostandfound"):
         
         # 丢失时间（随机生成）
         lost_time = generate_random_datetime()
-        driver.find_element(By.ID, "lostTime").send_keys(lost_time)
+        time_input = driver.find_element(By.ID, "lostTime")
+        time_input.clear()
+        time_input.send_keys(lost_time)
         
         # 联系方式（随机选择）
         driver.find_element(By.ID, "contactInfo").send_keys(random.choice(CONTACT_INFOS))
