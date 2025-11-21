@@ -103,17 +103,17 @@
     <!-- 导航栏 -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.jsp">失物招领平台</a>
+            <a class="navbar-brand" href="<%=request.getContextPath()%>/index.jsp">失物招领平台</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.jsp">首页</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/index.jsp">首页</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="lost-items">失物信息</a>
+                        <a class="nav-link active" href="<%=request.getContextPath()%>/lost-items">失物信息</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="found-items">招领信息</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/found-items">招领信息</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
@@ -123,15 +123,15 @@
                                 <a class="nav-link" href="#">欢迎, ${sessionScope.user.username}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="logout">退出</a>
+                                <a class="nav-link" href="<%=request.getContextPath()%>/logout">退出</a>
                             </li>
                         </c:when>
                         <c:otherwise>
                             <li class="nav-item">
-                                <a class="nav-link" href="login.jsp">登录</a>
+                                <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp">登录</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="register.jsp">注册</a>
+                                <a class="nav-link" href="<%=request.getContextPath()%>/register.jsp">注册</a>
                             </li>
                         </c:otherwise>
                     </c:choose>
@@ -146,7 +146,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h1>失物信息</h1>
                 <c:if test="${sessionScope.user != null}">
-                    <a href="lost-items/new" class="btn btn-light">发布失物信息</a>
+                    <a href="<%=request.getContextPath()%>/lost-items/new" class="btn btn-light">发布失物信息</a>
                 </c:if>
             </div>
         </div>
@@ -156,7 +156,7 @@
         <!-- 搜索和筛选表单 -->
         <div class="card search-card mt-4">
             <div class="card-body">
-                <form class="row g-3" method="get" action="lost-items">
+                <form class="row g-3" method="get" action="<%=request.getContextPath()%>/lost-items">
                     <div class="col-md-3">
                         <label for="keyword" class="form-label">关键词</label>
                         <input type="text" class="form-control" id="keyword" name="keyword" placeholder="标题或描述" value="${param.keyword}" list="keywords">

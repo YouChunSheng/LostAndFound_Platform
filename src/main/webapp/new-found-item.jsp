@@ -11,17 +11,17 @@
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.jsp">失物招领平台</a>
+            <a class="navbar-brand" href="<%=request.getContextPath()%>/index.jsp">失物招领平台</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.jsp">首页</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/index.jsp">首页</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="lost-items">失物信息</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/lost-items">失物信息</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="found-items">招领信息</a>
+                        <a class="nav-link active" href="<%=request.getContextPath()%>/found-items">招领信息</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
@@ -31,15 +31,15 @@
                                 <a class="nav-link" href="#">欢迎, ${sessionScope.user.username}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="logout">退出</a>
+                                <a class="nav-link" href="<%=request.getContextPath()%>/logout">退出</a>
                             </li>
                         </c:when>
                         <c:otherwise>
                             <li class="nav-item">
-                                <a class="nav-link" href="login.jsp">登录</a>
+                                <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp">登录</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="register.jsp">注册</a>
+                                <a class="nav-link" href="<%=request.getContextPath()%>/register.jsp">注册</a>
                             </li>
                         </c:otherwise>
                     </c:choose>
@@ -67,7 +67,7 @@
                         </div>
                     <% } %>
 
-                    <form action="found-items" method="post" enctype="multipart/form-data">
+                    <form action="<%=request.getContextPath()%>/found-items" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="create">
                         <div class="mb-3">
                             <label for="title" class="form-label">标题</label>

@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>失物招领平台 - Lost and Found Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             font-family: "Microsoft YaHei", Arial, sans-serif;
@@ -152,7 +153,7 @@
     <!-- 导航栏 -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="index.jsp">
+            <a class="navbar-brand" href="<%=request.getContextPath()%>/index.jsp">
                 <i class="fas fa-search-location me-2"></i>失物招领平台
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -185,19 +186,19 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <c:if test="${sessionScope.user.role == 'admin'}">
-                                        <li><a class="dropdown-item" href="admin/">管理员面板</a></li>
+                                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/admin/">管理员面板</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                     </c:if>
-                                    <li><a class="dropdown-item" href="logout">退出登录</a></li>
+                                    <li><a class="dropdown-item" href="<%=request.getContextPath()%>/logout">退出登录</a></li>
                                 </ul>
                             </li>
                         </c:when>
                         <c:otherwise>
                             <li class="nav-item">
-                                <a class="btn btn-outline-light me-2" href="login.jsp">登录</a>
+                                <a class="btn btn-outline-light me-2" href="<%=request.getContextPath()%>/login.jsp">登录</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-warning" href="register.jsp">注册</a>
+                                <a class="btn btn-warning" href="<%=request.getContextPath()%>/register.jsp">注册</a>
                             </li>
                         </c:otherwise>
                     </c:choose>
@@ -214,10 +215,10 @@
                     <h1 class="display-4 fw-bold mb-3">找回您的失物<br><small class="text-light">Recover Your Lost Items</small></h1>
                     <p class="lead mb-4">连接失主与拾主，让每一份善意都不被辜负<br>Connecting owners and finders, ensuring no kindness goes unrewarded</p>
                     <div class="d-flex gap-3">
-                        <a href="lost-items/new" class="btn btn-light btn-lg">
+                        <a href="<%=request.getContextPath()%>/lost-items/new" class="btn btn-light btn-lg">
                             <i class="fas fa-plus-circle me-2"></i>发布失物信息<br><small>Post Lost Item</small>
                         </a>
-                        <a href="found-items/new" class="btn btn-outline-light btn-lg">
+                        <a href="<%=request.getContextPath()%>/found-items/new" class="btn btn-outline-light btn-lg">
                             <i class="fas fa-hand-holding-heart me-2"></i>发布招领信息<br><small>Post Found Item</small>
                         </a>
                     </div>
@@ -267,7 +268,7 @@
                             <h3 class="card-title mb-0">查找失物</h3>
                         </div>
                         <p class="card-text">浏览最新的失物信息，寻找您可能丢失的物品。可以通过关键词、分类、地点等条件筛选。</p>
-                        <a href="lost-items" class="btn btn-primary">查看失物信息</a>
+                        <a href="<%=request.getContextPath()%>/lost-items" class="btn btn-primary">查看失物信息</a>
                     </div>
                 </div>
             </div>
@@ -282,7 +283,7 @@
                             <h3 class="card-title mb-0">发布招领</h3>
                         </div>
                         <p class="card-text">捡到物品？在这里发布招领信息，帮助失主找回他们的物品，传递社会正能量。</p>
-                        <a href="found-items" class="btn btn-success">查看招领信息</a>
+                        <a href="<%=request.getContextPath()%>/found-items" class="btn btn-success">查看招领信息</a>
                     </div>
                 </div>
             </div>

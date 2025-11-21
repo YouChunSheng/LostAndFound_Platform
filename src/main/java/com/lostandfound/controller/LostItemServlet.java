@@ -30,6 +30,11 @@ import java.util.List;
 public class LostItemServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 设置请求和响应编码
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+        
         String pathInfo = request.getPathInfo();
 
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -77,6 +82,11 @@ public class LostItemServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 设置请求和响应编码
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+        
         String action = request.getParameter("action");
 
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -85,7 +95,7 @@ public class LostItemServlet extends HttpServlet {
             User currentUser = (User) session.getAttribute("user");
 
             if (currentUser == null) {
-                response.sendRedirect("login.jsp");
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
                 return;
             }
 
@@ -131,17 +141,17 @@ public class LostItemServlet extends HttpServlet {
 
                 boolean created = lostItemService.createLostItem(lostItem);
                 if (created) {
-                    response.sendRedirect("lost-items");
+                    response.sendRedirect(request.getContextPath() + "/lost-items");
                 } else {
-                    response.sendRedirect("lost-items/new?error=creation_failed");
+                    response.sendRedirect(request.getContextPath() + "/lost-items/new?error=creation_failed");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("lost-items/new?error=database_error");
+            response.sendRedirect(request.getContextPath() + "/lost-items/new?error=database_error");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("lost-items/new?error=upload_failed");
+            response.sendRedirect(request.getContextPath() + "/lost-items/new?error=upload_failed");
         }
     }
 }

@@ -10,7 +10,7 @@
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.jsp">失物招领平台</a>
+            <a class="navbar-brand" href="<%=request.getContextPath()%>/index.jsp">失物招领平台</a>
         </div>
     </nav>
 
@@ -31,7 +31,7 @@
                         </div>
                     <% } %>
 
-                    <form action="register" method="post">
+                    <form action="<%=request.getContextPath()%>/register" method="post">
                         <div class="mb-3">
                             <label for="username" class="form-label">用户名</label>
                             <input type="text" class="form-control" id="username" name="username" required>
@@ -53,7 +53,7 @@
                         </div>
                     </form>
                     <div class="mt-3 text-center">
-                        <p>已有账号？<a href="login.jsp">立即登录</a></p>
+                        <p>已有账号？<a href="<%=request.getContextPath()%>/login.jsp">立即登录</a></p>
                     </div>
                 </div>
             </div>
