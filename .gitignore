@@ -12,6 +12,10 @@ target/
 *.iml
 *.ipr
 
+### 测试结果文档 ###
+测试结果文档/
+test_report.md
+
 ### Eclipse ###
 .apt_generated
 .classpath
