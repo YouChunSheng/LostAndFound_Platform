@@ -62,7 +62,9 @@ def generate_random_datetime():
     random_minute = random.randint(0, 59)
     
     # 格式化为HTML datetime-local格式 (YYYY-MM-DDTHH:MM)
-    return random_date.strftime(f"%Y-%m-%dT{random_hour:02d}:{random_minute:02d}")
+    time_str = random_date.strftime(f"%Y-%m-%dT{random_hour:02d}:{random_minute:02d}")
+    print(f"生成的时间字符串: {time_str}")  # 调试信息
+    return time_str
 
 def auto_fill_lost_item_form(base_url="https://localhost:8090/lostandfound"):
     """
@@ -126,6 +128,13 @@ def auto_fill_lost_item_form(base_url="https://localhost:8090/lostandfound"):
         time_input = driver.find_element(By.ID, "lostTime")
         time_input.clear()
         time_input.send_keys(lost_time)
+        
+        # 添加延迟以便观察时间输入
+        time.sleep(1)
+        
+        # 检查时间是否正确输入
+        entered_time = time_input.get_attribute('value')
+        print(f"输入框中的时间值: {entered_time}")
         
         # 联系方式（随机选择）
         driver.find_element(By.ID, "contactInfo").send_keys(random.choice(CONTACT_INFOS))
