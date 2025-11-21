@@ -142,9 +142,9 @@ def auto_fill_lost_item_form(base_url="https://localhost:8090/lostandfound"):
         driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
         time.sleep(3)
         
-        # 检查是否提交成功
-        if "lost-items" in driver.current_url:
-            print("失物信息发布成功！")
+        # 检查是否提交成功（根据后端代码，成功后会跳转到lost-items页面）
+        if "lost-items" in driver.current_url and "new" not in driver.current_url:
+            print("失物信息发布成功！页面已跳转到失物信息列表页。")
         else:
             print("发布可能失败，请检查页面")
         
