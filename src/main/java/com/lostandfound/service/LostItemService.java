@@ -43,4 +43,40 @@ public class LostItemService {
     public List<LostItem> searchLostItems(String keyword, String category, String location, String dateFrom, String dateTo) throws SQLException {
         return lostItemDAO.searchLostItems(keyword, category, location, dateFrom, dateTo);
     }
+    
+    // Search lost items with pagination
+    public List<LostItem> searchLostItems(String keyword, String category, String location, String dateFrom, String dateTo, int page, int pageSize) throws SQLException {
+        int offset = (page - 1) * pageSize;
+        return lostItemDAO.searchLostItems(keyword, category, location, dateFrom, dateTo, offset, pageSize);
+    }
+    
+    // Get total count of lost items with filters
+    public int getTotalLostItemsCount(String keyword, String category, String location, String dateFrom, String dateTo) throws SQLException {
+        return lostItemDAO.getTotalLostItemsCount(keyword, category, location, dateFrom, dateTo);
+    }
+    
+    // Delete lost item by ID and user ID (for user to delete their own items)
+    public boolean deleteLostItemByIdAndUserId(int id, int userId) throws SQLException {
+        return lostItemDAO.deleteLostItemByIdAndUserId(id, userId);
+    }
+    
+    // Delete lost item by ID only (for admin use)
+    public boolean deleteLostItemById(int id) throws SQLException {
+        return lostItemDAO.deleteLostItemById(id);
+    }
+    
+    // Batch delete lost items by IDs (for admin use)
+    public int batchDeleteLostItemsByIds(int[] ids) throws SQLException {
+        return lostItemDAO.batchDeleteLostItemsByIds(ids);
+    }
+    
+    // Update lost item
+    public boolean updateLostItem(LostItem lostItem) throws SQLException {
+        return lostItemDAO.updateLostItem(lostItem);
+    }
+    
+    // Update lost item status
+    public boolean updateLostItemStatus(int id, String status) throws SQLException {
+        return lostItemDAO.updateLostItemStatus(id, status);
+    }
 }

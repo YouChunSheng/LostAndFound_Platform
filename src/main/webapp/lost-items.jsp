@@ -97,6 +97,14 @@
             height: 200px;
             object-fit: cover;
         }
+        
+        /* 状态标签样式 */
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -153,6 +161,21 @@
     </section>
 
     <div class="container">
+        <!-- 消息提示 -->
+        <c:if test="${not empty param.message}">
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                ${param.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+        
+        <c:if test="${not empty param.error}">
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                ${param.error}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+        
         <!-- 搜索和筛选表单 -->
         <div class="card search-card mt-4">
             <div class="card-body">
@@ -243,9 +266,19 @@
         <div id="list-view" class="row mt-4">
             <c:forEach var="item" items="${lostItems}">
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100">
+                    <div class="card h-100 position-relative">
+                        <c:if test="${item.status == 'claimed'}">
+                            <div class="status-badge">
+                                <span class="badge bg-success">已认领</span>
+                            </div>
+                        </c:if>
+                        <c:if test="${item.status == 'unclaimed'}">
+                            <div class="status-badge">
+                                <span class="badge bg-warning">未认领</span>
+                            </div>
+                        </c:if>
                         <c:if test="${item.imageUrl != null && !empty item.imageUrl}">
-                            <img src="${item.imageUrl}" class="card-img-top" alt="${item.title}" style="height: 200px; object-fit: cover;">
+                            <img src="<%=request.getContextPath()%>/${item.imageUrl}" class="card-img-top" alt="${item.title}" style="height: 200px; object-fit: cover;">
                         </c:if>
                         <div class="card-body">
                             <h5 class="card-title">${item.title}</h5>
@@ -270,7 +303,17 @@
         <div id="masonry-view" class="masonry-grid" style="display: none;">
             <c:forEach var="item" items="${lostItems}">
                 <div class="masonry-item">
-                    <div class="card masonry-card">
+                    <div class="card masonry-card position-relative">
+                        <c:if test="${item.status == 'claimed'}">
+                            <div class="status-badge">
+                                <span class="badge bg-success">已认领</span>
+                            </div>
+                        </c:if>
+                        <c:if test="${item.status == 'unclaimed'}">
+                            <div class="status-badge">
+                                <span class="badge bg-warning">未认领</span>
+                            </div>
+                        </c:if>
                         <c:if test="${item.imageUrl != null && !empty item.imageUrl}">
                             <img src="${item.imageUrl}" class="card-img-top" alt="${item.title}">
                         </c:if>
@@ -293,19 +336,45 @@
         </div>
         
         <!-- 分页 -->
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">上一页</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">下一页</a>
-                </li>
-            </ul>
-        </nav>
+        <c:if test="${totalPages > 1}">
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <!-- 上一页 -->
+                    <c:if test="${currentPage > 1}">
+                        <li class="page-item">
+                            <a class="page-link" href="?page=${currentPage - 1}&pageSize=${pageSize}&keyword=${param.keyword}&category=${param.category}&location=${param.location}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}">上一页</a>
+                        </li>
+                    </c:if>
+                    <c:if test="${currentPage <= 1}">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">上一页</a>
+                        </li>
+                    </c:if>
+                    
+                    <!-- 页码 -->
+                    <c:forEach var="i" begin="1" end="${totalPages}">
+                        <c:if test="${i == currentPage}">
+                            <li class="page-item active"><a class="page-link" href="?page=${i}&pageSize=${pageSize}&keyword=${param.keyword}&category=${param.category}&location=${param.location}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}">${i}</a></li>
+                        </c:if>
+                        <c:if test="${i != currentPage}">
+                            <li class="page-item"><a class="page-link" href="?page=${i}&pageSize=${pageSize}&keyword=${param.keyword}&category=${param.category}&location=${param.location}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}">${i}</a></li>
+                        </c:if>
+                    </c:forEach>
+                    
+                    <!-- 下一页 -->
+                    <c:if test="${currentPage < totalPages}">
+                        <li class="page-item">
+                            <a class="page-link" href="?page=${currentPage + 1}&pageSize=${pageSize}&keyword=${param.keyword}&category=${param.category}&location=${param.location}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}">下一页</a>
+                        </li>
+                    </c:if>
+                    <c:if test="${currentPage >= totalPages}">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">下一页</a>
+                        </li>
+                    </c:if>
+                </ul>
+            </nav>
+        </c:if>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>

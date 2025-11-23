@@ -18,7 +18,7 @@
                         <a class="nav-link" href="<%=request.getContextPath()%>/index.jsp">首页</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="<%=request.getContextPath()%>/lost-items">失物信息</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/lost-items">失物信息</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<%=request.getContextPath()%>/found-items">招领信息</a>
@@ -53,6 +53,20 @@
         </div>
     </nav>
 
+    <c:if test="${not empty param.message}">
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            ${param.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+    
+    <c:if test="${not empty param.error}">
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            ${param.error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
     <div class="row mt-4">
         <div class="col-md-8">
             <div class="card">
@@ -62,7 +76,7 @@
                 <div class="card-body">
                     <c:if test="${lostItem.imageUrl != null && !empty lostItem.imageUrl}">
                         <div class="text-center mb-3">
-                            <img src="${lostItem.imageUrl}" alt="物品图片" class="img-fluid" style="max-height: 300px;">
+                            <img src="<%=request.getContextPath()%>/${lostItem.imageUrl}" alt="物品图片" class="img-fluid" style="max-height: 300px;">
                         </div>
                     </c:if>
                     <p class="card-text">${lostItem.description}</p>
@@ -75,9 +89,15 @@
                         <li class="list-group-item"><strong>联系方式:</strong> ${lostItem.contactInfo}</li>
                         <li class="list-group-item"><strong>状态:</strong> 
                             <c:choose>
-                                <c:when test="${lostItem.status == 'unclaimed'}">未认领</c:when>
-                                <c:when test="${lostItem.status == 'claimed'}">已认领</c:when>
-                                <c:otherwise>未知</c:otherwise>
+                                <c:when test="${lostItem.status == 'unclaimed'}">
+                                    <span class="badge bg-warning">未认领</span>
+                                </c:when>
+                                <c:when test="${lostItem.status == 'claimed'}">
+                                    <span class="badge bg-success">已认领</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="badge bg-secondary">未知</span>
+                                </c:otherwise>
                             </c:choose>
                         </li>
                         <li class="list-group-item"><strong>发布时间:</strong> ${lostItem.createdAt}</li>
@@ -93,18 +113,39 @@
                 </div>
                 <div class="card-body">
                     <c:if test="${sessionScope.user != null && sessionScope.user.id == lostItem.userId}">
-                        <a href="#" class="btn btn-primary w-100 mb-2">编辑信息</a>
-                        <a href="#" class="btn btn-danger w-100">删除信息</a>
+                        <a href="<%=request.getContextPath()%>/lost-items/detail?action=edit&id=${lostItem.id}" class="btn btn-primary w-100 mb-2">编辑信息</a>
+                        <form action="<%=request.getContextPath()%>/lost-items/detail" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="${lostItem.id}">
+                            <button type="submit" class="btn btn-danger w-100" onclick="return confirm('确定要删除这条失物信息吗？')">删除信息</button>
+                        </form>
                     </c:if>
-                    <c:if test="${sessionScope.user != null && sessionScope.user.id != lostItem.userId}">
-                        <a href="#" class="btn btn-success w-100">我捡到了这个物品</a>
+                    <c:if test="${sessionScope.user != null && sessionScope.user.id != lostItem.userId && lostItem.status == 'unclaimed'}">
+                        <a href="<%=request.getContextPath()%>/lost-items/detail?action=match&id=${lostItem.id}" class="btn btn-success w-100 mb-2">我捡到了这个物品</a>
+                        <form id="claimForm" style="display:inline;">
+                            <input type="hidden" name="action" value="claim">
+                            <input type="hidden" name="id" value="${lostItem.id}">
+                            <button type="button" class="btn btn-info w-100" onclick="submitClaimForm()">认领物品</button>
+                        </form>
+                    </c:if>
+                    <c:if test="${sessionScope.user != null && sessionScope.user.id != lostItem.userId && lostItem.status == 'claimed'}">
+                        <button class="btn btn-secondary w-100" disabled>物品已被认领</button>
+                        <form id="revokeClaimForm" style="display:inline;" class="mt-2">
+                            <input type="hidden" name="action" value="revokeClaim">
+                            <input type="hidden" name="id" value="${lostItem.id}">
+                            <button type="button" class="btn btn-warning w-100" onclick="submitRevokeClaimForm()">撤销认领</button>
+                        </form>
                     </c:if>
                     <!-- 管理员额外操作 -->
                     <c:if test="${sessionScope.user != null && sessionScope.user.role == 'admin'}">
                         <div class="mt-3">
                             <h6>管理员操作</h6>
-                            <a href="#" class="btn btn-warning w-100 mb-2">编辑信息(管理员)</a>
-                            <a href="#" class="btn btn-danger w-100">删除信息(管理员)</a>
+                            <a href="<%=request.getContextPath()%>/lost-items/detail?action=edit&id=${lostItem.id}" class="btn btn-warning w-100 mb-2">编辑信息(管理员)</a>
+                            <form action="<%=request.getContextPath()%>/admin/lost-items" method="post" style="display:inline;">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="id" value="${lostItem.id}">
+                                <button type="submit" class="btn btn-danger w-100" onclick="return confirm('确定要删除这条失物信息吗？')">删除信息(管理员)</button>
+                            </form>
                         </div>
                     </c:if>
                 </div>
@@ -122,5 +163,48 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function submitClaimForm() {
+        if (confirm('确定要认领这个物品吗？')) {
+            const form = document.getElementById('claimForm');
+            const formData = new FormData(form);
+            
+            fetch('<%=request.getContextPath()%>/lost-items', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    window.location.reload();
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                window.location.href = '<%=request.getContextPath()%>/lost-items';
+            });
+        }
+    }
+    
+    function submitRevokeClaimForm() {
+        if (confirm('确定要撤销认领这个物品吗？')) {
+            const form = document.getElementById('revokeClaimForm');
+            const formData = new FormData(form);
+            
+            fetch('<%=request.getContextPath()%>/lost-items', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    window.location.reload();
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                window.location.href = '<%=request.getContextPath()%>/lost-items';
+            });
+        }
+    }
+</script>
 </body>
 </html>

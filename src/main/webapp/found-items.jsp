@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>招领信息 - 失物招领平台</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             font-family: "Microsoft YaHei", Arial, sans-serif;
@@ -55,6 +56,54 @@
         .page-item.active .page-link {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             border-color: #2575fc;
+        }
+        
+        /* 瀑布流布局样式 */
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+        }
+        
+        .view-toggle {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .view-btn {
+            margin-left: 10px;
+        }
+        
+        .masonry-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .masonry-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .masonry-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        /* 状态标签样式 */
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
         }
     </style>
 </head>
@@ -116,11 +165,28 @@
         <div class="card search-card mt-4">
             <div class="card-body">
                 <form class="row g-3" method="get" action="<%=request.getContextPath()%>/found-items">
-                    <div class="col-md-4">
-                        <label for="keyword" class="form-label">关键词</label>
-                        <input type="text" class="form-control" id="keyword" name="keyword" placeholder="标题或描述" value="${param.keyword}">
-                    </div>
                     <div class="col-md-3">
+                        <label for="keyword" class="form-label">关键词</label>
+                        <input type="text" class="form-control" id="keyword" name="keyword" placeholder="标题或描述" value="${param.keyword}" list="keywords">
+                        <datalist id="keywords">
+                            <option value="手机">
+                            <option value="钱包">
+                            <option value="钥匙">
+                            <option value="身份证">
+                            <option value="学生证">
+                            <option value="银行卡">
+                            <option value="耳机">
+                            <option value="U盘">
+                            <option value="笔记本电脑">
+                            <option value="平板电脑">
+                            <option value="书本">
+                            <option value="眼镜">
+                            <option value="手表">
+                            <option value="外套">
+                            <option value="雨伞">
+                        </datalist>
+                    </div>
+                    <div class="col-md-2">
                         <label for="category" class="form-label">分类</label>
                         <select class="form-select" id="category" name="category">
                             <option value="">全部分类</option>
@@ -148,10 +214,30 @@
                             <option value="其他">
                         </datalist>
                     </div>
+                    <div class="col-md-2">
+                        <label for="dateFrom" class="form-label">拾取日期从</label>
+                        <input type="date" class="form-control" id="dateFrom" name="dateFrom" value="${param.dateFrom}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="dateTo" class="form-label">拾取日期至</label>
+                        <input type="date" class="form-control" id="dateTo" name="dateTo" value="${param.dateTo}">
+                    </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">搜索</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- 视图切换按钮 -->
+        <div class="view-toggle">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary view-btn" id="list-view-btn">
+                    <i class="fas fa-list"></i> 列表视图
+                </button>
+                <button type="button" class="btn btn-outline-primary view-btn" id="masonry-view-btn">
+                    <i class="fas fa-th-large"></i> 瀑布流视图
+                </button>
             </div>
         </div>
 
@@ -161,12 +247,38 @@
             </div>
         </c:if>
 
-        <div class="row mt-4">
+        <!-- 消息提示 -->
+        <c:if test="${not empty param.message}">
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                ${param.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+        
+        <c:if test="${not empty param.error}">
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                ${param.error}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+
+        <!-- 列表视图 -->
+        <div id="list-view" class="row mt-4">
             <c:forEach var="item" items="${foundItems}">
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100">
+                    <div class="card h-100 position-relative">
+                        <c:if test="${item.status == 'claimed'}">
+                            <div class="status-badge">
+                                <span class="badge bg-success">已认领</span>
+                            </div>
+                        </c:if>
+                        <c:if test="${item.status == 'unclaimed'}">
+                            <div class="status-badge">
+                                <span class="badge bg-warning">未认领</span>
+                            </div>
+                        </c:if>
                         <c:if test="${item.imageUrl != null && !empty item.imageUrl}">
-                            <img src="${item.imageUrl}" class="card-img-top" alt="${item.title}" style="height: 200px; object-fit: cover;">
+                            <img src="<%=request.getContextPath()%>/${item.imageUrl}" class="card-img-top" alt="${item.title}" style="height: 200px; object-fit: cover;">
                         </c:if>
                         <div class="card-body">
                             <h5 class="card-title">${item.title}</h5>
@@ -180,6 +292,56 @@
                         </div>
                         <div class="card-footer">
                             <small class="text-muted">发布于 ${item.createdAt}</small>
+                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'admin' && item.status == 'claimed'}">
+                                <form action="<%=request.getContextPath()%>/found-items" method="post" style="display: inline;" class="me-2 float-end">
+                                    <input type="hidden" name="action" value="revokeClaim">
+                                    <input type="hidden" name="id" value="${item.id}">
+                                    <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('确定要撤销这条招领信息的认领状态吗？')">撤销认领</button>
+                                </form>
+                            </c:if>
+                            <a href="<%=request.getContextPath()%>/found-items/detail?id=${item.id}" class="btn btn-sm btn-outline-primary float-end">查看详情</a>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+
+        <!-- 瀑布流视图 -->
+        <div id="masonry-view" class="masonry-grid" style="display: none;">
+            <c:forEach var="item" items="${foundItems}">
+                <div class="masonry-item">
+                    <div class="card masonry-card position-relative">
+                        <c:if test="${item.status == 'claimed'}">
+                            <div class="status-badge">
+                                <span class="badge bg-success">已认领</span>
+                            </div>
+                        </c:if>
+                        <c:if test="${item.status == 'unclaimed'}">
+                            <div class="status-badge">
+                                <span class="badge bg-warning">未认领</span>
+                            </div>
+                        </c:if>
+                        <c:if test="${item.imageUrl != null && !empty item.imageUrl}">
+                            <img src="<%=request.getContextPath()%>/${item.imageUrl}" class="card-img-top" alt="${item.title}">
+                        </c:if>
+                        <div class="card-body">
+                            <h5 class="card-title">${item.title}</h5>
+                            <p class="card-text">${item.description}</p>
+                            <ul class="list-unstyled">
+                                <li><strong>分类:</strong> ${item.category}</li>
+                                <li><strong>拾取地点:</strong> ${item.foundLocation}</li>
+                                <li><strong>拾取时间:</strong> ${item.foundTime}</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">发布于 ${item.createdAt}</small>
+                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'admin' && item.status == 'claimed'}">
+                                <form action="<%=request.getContextPath()%>/found-items" method="post" style="display: inline;" class="me-2 float-end">
+                                    <input type="hidden" name="action" value="revokeClaim">
+                                    <input type="hidden" name="id" value="${item.id}">
+                                    <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('确定要撤销这条招领信息的认领状态吗？')">撤销认领</button>
+                                </form>
+                            </c:if>
                             <a href="<%=request.getContextPath()%>/found-items/detail?id=${item.id}" class="btn btn-sm btn-outline-primary float-end">查看详情</a>
                         </div>
                     </div>
@@ -188,13 +350,84 @@
         </div>
         
         <!-- 分页 -->
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">上一页</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">下一页</a>
+        <c:if test="${totalPages > 1}">
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <!-- 上一页 -->
+                    <c:if test="${currentPage > 1}">
+                        <li class="page-item">
+                            <a class="page-link" href="?page=${currentPage - 1}&pageSize=${pageSize}&keyword=${param.keyword}&category=${param.category}&location=${param.location}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}">上一页</a>
+                        </li>
+                    </c:if>
+                    <c:if test="${currentPage <= 1}">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">上一页</a>
+                        </li>
+                    </c:if>
+                    
+                    <!-- 页码 -->
+                    <c:forEach var="i" begin="1" end="${totalPages}">
+                        <c:if test="${i == currentPage}">
+                            <li class="page-item active"><a class="page-link" href="?page=${i}&pageSize=${pageSize}&keyword=${param.keyword}&category=${param.category}&location=${param.location}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}">${i}</a></li>
+                        </c:if>
+                        <c:if test="${i != currentPage}">
+                            <li class="page-item"><a class="page-link" href="?page=${i}&pageSize=${pageSize}&keyword=${param.keyword}&category=${param.category}&location=${param.location}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}">${i}</a></li>
+                        </c:if>
+                    </c:forEach>
+                    
+                    <!-- 下一页 -->
+                    <c:if test="${currentPage < totalPages}">
+                        <li class="page-item">
+                            <a class="page-link" href="?page=${currentPage + 1}&pageSize=${pageSize}&keyword=${param.keyword}&category=${param.category}&location=${param.location}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}">下一页</a>
+                        </li>
+                    </c:if>
+                    <c:if test="${currentPage >= totalPages}">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">下一页</a>
+                        </li>
+                    </c:if>
+                </ul>
+            </nav>
+        </c:if>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 视图切换功能
+        function setView(view) {
+            if (view === 'list') {
+                document.getElementById('list-view').style.display = 'flex';
+                document.getElementById('masonry-view').style.display = 'none';
+                document.getElementById('list-view-btn').classList.remove('btn-outline-primary');
+                document.getElementById('list-view-btn').classList.add('btn-primary');
+                document.getElementById('masonry-view-btn').classList.remove('btn-primary');
+                document.getElementById('masonry-view-btn').classList.add('btn-outline-primary');
+                // 保存用户偏好
+                localStorage.setItem('foundItemsView', 'list');
+            } else {
+                document.getElementById('list-view').style.display = 'none';
+                document.getElementById('masonry-view').style.display = 'grid';
+                document.getElementById('masonry-view-btn').classList.remove('btn-outline-primary');
+                document.getElementById('masonry-view-btn').classList.add('btn-primary');
+                document.getElementById('list-view-btn').classList.remove('btn-primary');
+                document.getElementById('list-view-btn').classList.add('btn-outline-primary');
+                // 保存用户偏好
+                localStorage.setItem('foundItemsView', 'masonry');
+            }
+        }
+        
+        document.getElementById('list-view-btn').addEventListener('click', function() {
+            setView('list');
+        });
+        
+        document.getElementById('masonry-view-btn').addEventListener('click', function() {
+            setView('masonry');
+        });
+        
+        // 页面加载时恢复用户偏好设置
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('foundItemsView') || 'list';
+            setView(savedView);
+        });
+    </script>
+</body>
+</html>

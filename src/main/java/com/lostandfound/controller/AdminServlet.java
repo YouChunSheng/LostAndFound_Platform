@@ -37,7 +37,7 @@ public class AdminServlet extends HttpServlet {
         try (Connection connection = DatabaseConnection.getConnection()) {
             AdminService adminService = new AdminService(connection);
 
-            if (pathInfo == null || pathInfo.equals("/")) {
+            if (pathInfo == null || pathInfo.equals("/") || pathInfo.equals("")) {
                 // Admin dashboard
                 request.setAttribute("userCount", 0); // Would be implemented in real app
                 request.setAttribute("lostItemCount", adminService.getAllLostItems().size());
@@ -55,10 +55,27 @@ public class AdminServlet extends HttpServlet {
                 // Manage found items
                 request.setAttribute("foundItems", adminService.getAllFoundItems());
                 request.getRequestDispatcher("/admin/found-items.jsp").forward(request, response);
+            } else if (pathInfo.equals("/batch-delete-lost-items.jsp")) {
+                // Batch delete lost items page
+                request.setAttribute("lostItems", adminService.getAllLostItems());
+                request.getRequestDispatcher("/admin/batch-delete-lost-items.jsp").forward(request, response);
+            } else if (pathInfo.equals("/batch-delete-found-items.jsp")) {
+                // Batch delete found items page
+                request.setAttribute("foundItems", adminService.getAllFoundItems());
+                request.getRequestDispatcher("/admin/batch-delete-found-items.jsp").forward(request, response);
+            } else {
+                // Default to dashboard if path not recognized
+                request.setAttribute("userCount", 0); // Would be implemented in real app
+                request.setAttribute("lostItemCount", adminService.getAllLostItems().size());
+                request.setAttribute("foundItemCount", adminService.getAllFoundItems().size());
+                request.getRequestDispatcher("/admin/dashboard.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + e.getMessage());
         }
     }
 
@@ -95,13 +112,22 @@ public class AdminServlet extends HttpServlet {
                     // Delete found item
                     adminService.deleteFoundItem(id);
                     response.sendRedirect(request.getContextPath() + "/admin/found-items");
+                } else {
+                    // Default redirect
+                    response.sendRedirect(request.getContextPath() + "/admin/");
                 }
+            } else {
+                // Default redirect
+                response.sendRedirect(request.getContextPath() + "/admin/");
             }
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + e.getMessage());
         }
     }
 }

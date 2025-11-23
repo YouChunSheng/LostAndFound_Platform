@@ -38,4 +38,45 @@ public class FoundItemService {
     public List<FoundItem> searchFoundItems(String keyword, String category, String location) throws SQLException {
         return foundItemDAO.searchFoundItems(keyword, category, location);
     }
+    
+    // Search found items with additional date range filters
+    public List<FoundItem> searchFoundItems(String keyword, String category, String location, String dateFrom, String dateTo) throws SQLException {
+        return foundItemDAO.searchFoundItems(keyword, category, location, dateFrom, dateTo);
+    }
+    
+    // Search found items with pagination
+    public List<FoundItem> searchFoundItems(String keyword, String category, String location, String dateFrom, String dateTo, int page, int pageSize) throws SQLException {
+        int offset = (page - 1) * pageSize;
+        return foundItemDAO.searchFoundItems(keyword, category, location, dateFrom, dateTo, offset, pageSize);
+    }
+    
+    // Get total count of found items with filters
+    public int getTotalFoundItemsCount(String keyword, String category, String location, String dateFrom, String dateTo) throws SQLException {
+        return foundItemDAO.getTotalFoundItemsCount(keyword, category, location, dateFrom, dateTo);
+    }
+    
+    // Delete found item by ID and user ID (for user to delete their own items)
+    public boolean deleteFoundItemByIdAndUserId(int id, int userId) throws SQLException {
+        return foundItemDAO.deleteFoundItemByIdAndUserId(id, userId);
+    }
+    
+    // Delete found item by ID only (for admin use)
+    public boolean deleteFoundItemById(int id) throws SQLException {
+        return foundItemDAO.deleteFoundItemById(id);
+    }
+    
+    // Batch delete found items by IDs (for admin use)
+    public int batchDeleteFoundItemsByIds(int[] ids) throws SQLException {
+        return foundItemDAO.batchDeleteFoundItemsByIds(ids);
+    }
+    
+    // Update found item
+    public boolean updateFoundItem(FoundItem foundItem) throws SQLException {
+        return foundItemDAO.updateFoundItem(foundItem);
+    }
+    
+    // Update found item status
+    public boolean updateFoundItemStatus(int id, String status) throws SQLException {
+        return foundItemDAO.updateFoundItemStatus(id, status);
+    }
 }

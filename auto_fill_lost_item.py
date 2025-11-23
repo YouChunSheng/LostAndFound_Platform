@@ -163,7 +163,7 @@ def auto_fill_lost_item_form(username="youchunsheng", password="123456", base_ur
             print(f"填写时间: {lost_time}")
             
             # 添加延迟以便观察时间输入
-            time.sleep(1)
+            time.sleep(2)
             
             # 检查时间是否正确输入
             entered_time = time_input.get_attribute('value')

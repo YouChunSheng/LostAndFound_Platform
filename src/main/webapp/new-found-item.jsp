@@ -57,17 +57,11 @@
                 <div class="card-body">
                     <% if (request.getParameter("error") != null) { %>
                         <div class="alert alert-danger" role="alert">
-                            <% if (request.getParameter("error").equals("creation_failed")) { %>
-                                信息发布失败，请稍后再试
-                            <% } else if (request.getParameter("error").equals("database_error")) { %>
-                                数据库错误，请稍后再试
-                            <% } else if (request.getParameter("error").equals("upload_failed")) { %>
-                                图片上传失败，请稍后再试
-                            <% } %>
+                            ${param.error}
                         </div>
                     <% } %>
 
-                    <form action="<%=request.getContextPath()%>/found-items" method="post" enctype="multipart/form-data">
+                    <form id="foundItemForm" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="create">
                         <div class="mb-3">
                             <label for="title" class="form-label">标题</label>
@@ -118,7 +112,7 @@
                             <input type="file" class="form-control" id="image" name="image" accept="image/*">
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">发布</button>
+                            <button type="button" class="btn btn-primary" onclick="submitFoundItemForm()">发布</button>
                         </div>
                     </form>
                 </div>
@@ -127,5 +121,39 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function submitFoundItemForm() {
+        const form = document.getElementById('foundItemForm');
+        
+        // 前端验证
+        if (!form.checkValidity()) {
+            // 如果表单验证失败，显示浏览器默认的验证提示
+            form.reportValidity();
+            return;
+        }
+        
+        const formData = new FormData(form);
+        
+        // 禁用提交按钮防止重复提交
+        const submitButton = form.querySelector('button[type="button"]');
+        submitButton.disabled = true;
+        submitButton.textContent = '发布中...';
+        
+        fetch('<%=request.getContextPath()%>/found-items', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            console.log('Response status:', response.status);
+            // 无论响应如何，都直接跳转到招领信息列表页面
+            window.location.href = '<%=request.getContextPath()%>/found-items';
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('提交过程中发生错误，请稍后再试');
+            // 重新启用提交按钮
+            submitButton.disabled = false;
+            submitButton.textContent = '发布';
+        });
+    }
+</script>
 </body>
 </html>

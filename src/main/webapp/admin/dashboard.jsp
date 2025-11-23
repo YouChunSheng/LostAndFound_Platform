@@ -11,28 +11,37 @@
 <div class="container-fluid">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="admin/">管理员后台</a>
+            <a class="navbar-brand" href="<%=request.getContextPath()%>/admin/">管理员后台</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="admin/">仪表盘</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/admin/">仪表盘</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin/users">用户管理</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/admin/users">用户管理</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin/lost-items">失物管理</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/admin/lost-items">失物管理</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin/found-items">招领管理</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/admin/found-items">招领管理</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="batchDeleteDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            批量删除
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="batchDeleteDropdown">
+                            <li><a class="dropdown-item" href="<%=request.getContextPath()%>/admin/batch-delete-lost-items.jsp">批量删除失物信息</a></li>
+                            <li><a class="dropdown-item" href="<%=request.getContextPath()%>/admin/batch-delete-found-items.jsp">批量删除招领信息</a></li>
+                        </ul>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="../index.jsp">返回首页</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/index.jsp">返回首页</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../logout">退出</a>
+                        <a class="nav-link" href="<%=request.getContextPath()%>/logout">退出</a>
                     </li>
                 </ul>
             </div>

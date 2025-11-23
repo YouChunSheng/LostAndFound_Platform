@@ -60,7 +60,8 @@ CREATE TABLE IF NOT EXISTS matches (
 
 -- Insert sample data
 INSERT INTO users (username, password, email, phone, role) VALUES 
-('admin', 'admin123', 'admin@example.com', '1234567890', 'admin'),
+('admin', '88888', 'admin@example.com', '1234567890', 'admin'),
+('youchunsheng', '123456', 'youchunsheng@example.com', '1234567891', 'user'),
 ('user1', 'user123', 'user1@example.com', '1234567891', 'user'),
 ('user2', 'user456', 'user2@example.com', '1234567892', 'user');
 
