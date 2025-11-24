@@ -249,14 +249,16 @@
                 method: 'POST',
                 body: new URLSearchParams(formData)
             }).then(response => {
+                // 正确处理服务器返回的重定向
                 if (response.redirected) {
                     window.location.href = response.url;
                 } else {
-                    window.location.reload();
+                    // 如果没有重定向，则手动跳转到招领列表页面
+                    window.location.href = '<%=request.getContextPath()%>/found-items?message=删除成功';
                 }
             }).catch(error => {
                 console.error('Error:', error);
-                window.location.href = '<%=request.getContextPath()%>/found-items';
+                window.location.href = '<%=request.getContextPath()%>/found-items?error=删除失败';
             });
         }
     }
@@ -274,7 +276,7 @@
                 window.location.href = '<%=request.getContextPath()%>/found-items?message=删除成功';
             }).catch(error => {
                 console.error('Error:', error);
-                window.location.href = '<%=request.getContextPath()%>/found-items';
+                window.location.href = '<%=request.getContextPath()%>/found-items?error=删除失败';
             });
         }
     }

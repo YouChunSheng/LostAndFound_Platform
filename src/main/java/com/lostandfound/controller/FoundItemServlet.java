@@ -275,11 +275,16 @@ public class FoundItemServlet extends HttpServlet {
                     try {
                         int id = Integer.parseInt(idParam);
                         FoundItem foundItem = foundItemService.getFoundItemById(id);
-                        if (foundItem != null && foundItem.getUserId() == currentUser.getId()) {
-                            request.setAttribute("foundItem", foundItem);
-                            request.getRequestDispatcher("/edit-found-item.jsp").forward(request, response);
+                        if (foundItem != null) {
+                            // 检查用户是否为物品所有者或管理员
+                            if (foundItem.getUserId() == currentUser.getId() || "admin".equals(currentUser.getRole())) {
+                                request.setAttribute("foundItem", foundItem);
+                                request.getRequestDispatcher("/edit-found-item.jsp").forward(request, response);
+                            } else {
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "您没有权限编辑此信息");
+                            }
                         } else {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "您没有权限编辑此信息");
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "招领信息未找到");
                         }
                     } catch (NumberFormatException e) {
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "无效的物品ID");
@@ -295,96 +300,104 @@ public class FoundItemServlet extends HttpServlet {
                         int id = Integer.parseInt(idParam);
                         FoundItem existingItem = foundItemService.getFoundItemById(id);
                         
-                        if (existingItem != null && existingItem.getUserId() == currentUser.getId()) {
-                            String title = request.getParameter("title");
-                            String description = request.getParameter("description");
-                            String category = request.getParameter("category");
-                            String foundLocation = request.getParameter("foundLocation");
-                            String foundTimeString = request.getParameter("foundTime");
-                            String contactInfo = request.getParameter("contactInfo");
-                            String currentImage = request.getParameter("currentImage");
-                            
-                            // 验证必填字段
-                            if (title == null || title.trim().isEmpty()) {
-                                response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=标题不能为空");
-                                return;
-                            }
-                            
-                            if (description == null || description.trim().isEmpty()) {
-                                response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=描述不能为空");
-                                return;
-                            }
-                            
-                            if (category == null || category.trim().isEmpty()) {
-                                response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=请选择分类");
-                                return;
-                            }
-                            
-                            if (foundLocation == null || foundLocation.trim().isEmpty()) {
-                                response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=拾取地点不能为空");
-                                return;
-                            }
-                            
-                            if (foundTimeString == null || foundTimeString.trim().isEmpty()) {
-                                response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=拾取时间不能为空");
-                                return;
-                            }
-                            
-                            if (contactInfo == null || contactInfo.trim().isEmpty()) {
-                                response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=联系方式不能为空");
-                                return;
-                            }
-                            
-                            LocalDateTime foundTime = null;
-                            if (foundTimeString != null && !foundTimeString.isEmpty()) {
-                                try {
-                                    foundTime = LocalDateTime.parse(foundTimeString.replace("T", " ")+":00");
-                                } catch (Exception e) {
+                        if (existingItem != null) {
+                            // 检查用户是否为物品所有者或管理员
+                            if (existingItem.getUserId() == currentUser.getId() || "admin".equals(currentUser.getRole())) {
+                                String title = request.getParameter("title");
+                                String description = request.getParameter("description");
+                                String category = request.getParameter("category");
+                                String foundLocation = request.getParameter("foundLocation");
+                                String foundTimeString = request.getParameter("foundTime");
+                                String contactInfo = request.getParameter("contactInfo");
+                                String currentImage = request.getParameter("currentImage");
+                                
+                                // 验证必填字段
+                                if (title == null || title.trim().isEmpty()) {
+                                    response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=标题不能为空");
+                                    return;
+                                }
+                                
+                                if (description == null || description.trim().isEmpty()) {
+                                    response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=描述不能为空");
+                                    return;
+                                }
+                                
+                                if (category == null || category.trim().isEmpty()) {
+                                    response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=请选择分类");
+                                    return;
+                                }
+                                
+                                if (foundLocation == null || foundLocation.trim().isEmpty()) {
+                                    response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=拾取地点不能为空");
+                                    return;
+                                }
+                                
+                                if (foundTimeString == null || foundTimeString.trim().isEmpty()) {
+                                    response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=拾取时间不能为空");
+                                    return;
+                                }
+                                
+                                if (contactInfo == null || contactInfo.trim().isEmpty()) {
+                                    response.sendRedirect(request.getContextPath() + "/found-items/detail?action=edit&id=" + id + "&error=联系方式不能为空");
+                                    return;
+                                }
+                                
+                                LocalDateTime foundTime = null;
+                                if (foundTimeString != null && !foundTimeString.isEmpty()) {
+                                    try {
+                                        foundTime = LocalDateTime.parse(foundTimeString.replace("T", " ")+":00");
+                                    } catch (Exception e) {
+                                        foundTime = LocalDateTime.now();
+                                    }
+                                } else {
                                     foundTime = LocalDateTime.now();
                                 }
-                            } else {
-                                foundTime = LocalDateTime.now();
-                            }
-                            
-                            FoundItem foundItem = new FoundItem();
-                            foundItem.setId(id);
-                            foundItem.setUserId(currentUser.getId());
-                            foundItem.setTitle(title.trim());
-                            foundItem.setDescription(description.trim());
-                            foundItem.setCategory(category.trim());
-                            foundItem.setFoundLocation(foundLocation.trim());
-                            foundItem.setFoundTime(foundTime);
-                            foundItem.setContactInfo(contactInfo.trim());
-                            foundItem.setImageUrl(currentImage); // Default to current image
-                            
-                            // Handle image upload
-                            Part imagePart = request.getPart("image");
-                            if (imagePart != null && imagePart.getSize() > 0) {
-                                // Get upload path
-                                String uploadPath = getServletContext().getRealPath("");
-                                String imagePath = FileUploadUtil.saveImageFile(imagePart, uploadPath);
-                                if (imagePath != null) {
-                                    // Delete old image if exists
-                                    if (currentImage != null && !currentImage.isEmpty()) {
-                                        FileUploadUtil.deleteFile(getServletContext().getRealPath("") + File.separator + currentImage);
+                                
+                                FoundItem foundItem = new FoundItem();
+                                foundItem.setId(id);
+                                foundItem.setUserId(existingItem.getUserId()); // 保持原用户ID
+                                foundItem.setTitle(title.trim());
+                                foundItem.setDescription(description.trim());
+                                foundItem.setCategory(category.trim());
+                                foundItem.setFoundLocation(foundLocation.trim());
+                                foundItem.setFoundTime(foundTime);
+                                foundItem.setContactInfo(contactInfo.trim());
+                                foundItem.setImageUrl(currentImage); // Default to current image
+                                
+                                // Handle image upload
+                                Part imagePart = request.getPart("image");
+                                if (imagePart != null && imagePart.getSize() > 0) {
+                                    // Get upload path
+                                    String uploadPath = getServletContext().getRealPath("");
+                                    String imagePath = FileUploadUtil.saveImageFile(imagePart, uploadPath);
+                                    if (imagePath != null) {
+                                        // Delete old image if exists
+                                        if (currentImage != null && !currentImage.isEmpty()) {
+                                            FileUploadUtil.deleteFile(getServletContext().getRealPath("") + File.separator + currentImage);
+                                        }
+                                        foundItem.setImageUrl(imagePath);
                                     }
-                                    foundItem.setImageUrl(imagePath);
                                 }
-                            }
-                            
-                            boolean updated = foundItemService.updateFoundItem(foundItem);
-                            if (updated) {
-                                response.sendRedirect(request.getContextPath() + "/found-items/detail?id=" + id + "&message=更新成功");
+                                
+                                boolean updated = foundItemService.updateFoundItem(foundItem);
+                                if (updated) {
+                                    // 更新成功后跳转到招领列表页面，而不是详情页面
+                                    response.sendRedirect(request.getContextPath() + "/found-items?message=更新成功");
+                                } else {
+                                    request.setAttribute("errorMessage", "更新失败");
+                                    request.setAttribute("foundItem", foundItem);
+                                    request.getRequestDispatcher("/edit-found-item.jsp").forward(request, response);
+                                }
                             } else {
-                                request.setAttribute("errorMessage", "更新失败");
-                                request.setAttribute("foundItem", foundItem);
-                                request.getRequestDispatcher("/edit-found-item.jsp").forward(request, response);
+                                // 用户没有权限编辑此信息
+                                response.sendRedirect(request.getContextPath() + "/found-items?error=您没有权限编辑此信息");
                             }
                         } else {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "您没有权限编辑此信息");
+                            // 招领信息未找到
+                            response.sendRedirect(request.getContextPath() + "/found-items?error=招领信息未找到");
                         }
                     } catch (NumberFormatException e) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "无效的物品ID");
+                        response.sendRedirect(request.getContextPath() + "/found-items?error=无效的物品ID");
                     }
                 } else {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "缺少物品ID");

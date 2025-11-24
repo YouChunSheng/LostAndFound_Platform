@@ -64,7 +64,7 @@
                         <div class="alert alert-danger">${errorMessage}</div>
                     </c:if>
                     
-                    <form action="<%=request.getContextPath()%>/lost-items/detail" method="post" enctype="multipart/form-data">
+                    <form action="<%=request.getContextPath()%>/lost-items" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="id" value="${lostItem.id}">
                         
@@ -136,14 +136,14 @@
                             <c:if test="${not empty lostItem.imageUrl}">
                                 <div class="mt-2">
                                     <p>当前图片:</p>
-                                    <img src="${lostItem.imageUrl}" alt="当前图片" style="max-width: 200px; max-height: 200px;">
+                                    <img src="<%=request.getContextPath()%>/${lostItem.imageUrl}" alt="当前图片" style="max-width: 200px; max-height: 200px;">
                                     <input type="hidden" name="currentImage" value="${lostItem.imageUrl}">
                                 </div>
                             </c:if>
                         </div>
                         
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">更新信息</button>
+                            <button type="button" class="btn btn-primary" onclick="submitEditLostItemForm()">更新信息</button>
                             <a href="<%=request.getContextPath()%>/lost-items/detail?id=${lostItem.id}" class="btn btn-secondary mt-2">取消</a>
                         </div>
                     </form>
@@ -153,5 +153,39 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function submitEditLostItemForm() {
+        const form = document.querySelector('form');
+        
+        // 前端验证
+        if (!form.checkValidity()) {
+            // 如果表单验证失败，显示浏览器默认的验证提示
+            form.reportValidity();
+            return;
+        }
+        
+        const formData = new FormData(form);
+        
+        // 禁用提交按钮防止重复提交
+        const submitButton = form.querySelector('button[type="button"]');
+        submitButton.disabled = true;
+        submitButton.textContent = '更新中...';
+        
+        fetch('<%=request.getContextPath()%>/lost-items', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            console.log('Response status:', response.status);
+            // 更新成功后跳转到失物信息列表页面
+            window.location.href = '<%=request.getContextPath()%>/lost-items?message=更新成功';
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('提交过程中发生错误，请稍后再试');
+            // 重新启用提交按钮
+            submitButton.disabled = false;
+            submitButton.textContent = '更新信息';
+        });
+    }
+</script>
 </body>
 </html>

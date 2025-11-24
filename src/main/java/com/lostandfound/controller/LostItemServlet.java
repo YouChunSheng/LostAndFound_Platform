@@ -257,11 +257,16 @@ public class LostItemServlet extends HttpServlet {
                     try {
                         int id = Integer.parseInt(idParam);
                         LostItem lostItem = lostItemService.getLostItemById(id);
-                        if (lostItem != null && lostItem.getUserId() == currentUser.getId()) {
-                            request.setAttribute("lostItem", lostItem);
-                            request.getRequestDispatcher("/edit-lost-item.jsp").forward(request, response);
+                        if (lostItem != null) {
+                            // 检查用户是否为物品所有者或管理员
+                            if (lostItem.getUserId() == currentUser.getId() || "admin".equals(currentUser.getRole())) {
+                                request.setAttribute("lostItem", lostItem);
+                                request.getRequestDispatcher("/edit-lost-item.jsp").forward(request, response);
+                            } else {
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "您没有权限编辑此信息");
+                            }
                         } else {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "您没有权限编辑此信息");
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "失物信息未找到");
                         }
                     } catch (NumberFormatException e) {
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "无效的物品ID");
@@ -277,65 +282,73 @@ public class LostItemServlet extends HttpServlet {
                         int id = Integer.parseInt(idParam);
                         LostItem existingItem = lostItemService.getLostItemById(id);
                         
-                        if (existingItem != null && existingItem.getUserId() == currentUser.getId()) {
-                            String title = request.getParameter("title");
-                            String description = request.getParameter("description");
-                            String category = request.getParameter("category");
-                            String lostLocation = request.getParameter("lostLocation");
-                            String lostTimeString = request.getParameter("lostTime");
-                            String contactInfo = request.getParameter("contactInfo");
-                            String currentImage = request.getParameter("currentImage");
-                            
-                            LocalDateTime lostTime = null;
-                            if (lostTimeString != null && !lostTimeString.isEmpty()) {
-                                try {
-                                    lostTime = LocalDateTime.parse(lostTimeString.replace("T", " ")+":00");
-                                } catch (Exception e) {
+                        if (existingItem != null) {
+                            // 检查用户是否为物品所有者或管理员
+                            if (existingItem.getUserId() == currentUser.getId() || "admin".equals(currentUser.getRole())) {
+                                String title = request.getParameter("title");
+                                String description = request.getParameter("description");
+                                String category = request.getParameter("category");
+                                String lostLocation = request.getParameter("lostLocation");
+                                String lostTimeString = request.getParameter("lostTime");
+                                String contactInfo = request.getParameter("contactInfo");
+                                String currentImage = request.getParameter("currentImage");
+                                
+                                LocalDateTime lostTime = null;
+                                if (lostTimeString != null && !lostTimeString.isEmpty()) {
+                                    try {
+                                        lostTime = LocalDateTime.parse(lostTimeString.replace("T", " ")+":00");
+                                    } catch (Exception e) {
+                                        lostTime = LocalDateTime.now();
+                                    }
+                                } else {
                                     lostTime = LocalDateTime.now();
                                 }
-                            } else {
-                                lostTime = LocalDateTime.now();
-                            }
-                            
-                            LostItem lostItem = new LostItem();
-                            lostItem.setId(id);
-                            lostItem.setUserId(currentUser.getId());
-                            lostItem.setTitle(title);
-                            lostItem.setDescription(description);
-                            lostItem.setCategory(category);
-                            lostItem.setLostLocation(lostLocation);
-                            lostItem.setLostTime(lostTime);
-                            lostItem.setContactInfo(contactInfo);
-                            lostItem.setImageUrl(currentImage); // Default to current image
-                            
-                            // Handle image upload
-                            Part imagePart = request.getPart("image");
-                            if (imagePart != null && imagePart.getSize() > 0) {
-                                // Get upload path
-                                String uploadPath = getServletContext().getRealPath("");
-                                String imagePath = FileUploadUtil.saveImageFile(imagePart, uploadPath);
-                                if (imagePath != null) {
-                                    // Delete old image if exists
-                                    if (currentImage != null && !currentImage.isEmpty()) {
-                                        FileUploadUtil.deleteFile(getServletContext().getRealPath("") + File.separator + currentImage);
+                                
+                                LostItem lostItem = new LostItem();
+                                lostItem.setId(id);
+                                lostItem.setUserId(existingItem.getUserId()); // 保持原用户ID
+                                lostItem.setTitle(title);
+                                lostItem.setDescription(description);
+                                lostItem.setCategory(category);
+                                lostItem.setLostLocation(lostLocation);
+                                lostItem.setLostTime(lostTime);
+                                lostItem.setContactInfo(contactInfo);
+                                lostItem.setImageUrl(currentImage); // Default to current image
+                                
+                                // Handle image upload
+                                Part imagePart = request.getPart("image");
+                                if (imagePart != null && imagePart.getSize() > 0) {
+                                    // Get upload path
+                                    String uploadPath = getServletContext().getRealPath("");
+                                    String imagePath = FileUploadUtil.saveImageFile(imagePart, uploadPath);
+                                    if (imagePath != null) {
+                                        // Delete old image if exists
+                                        if (currentImage != null && !currentImage.isEmpty()) {
+                                            FileUploadUtil.deleteFile(getServletContext().getRealPath("") + File.separator + currentImage);
+                                        }
+                                        lostItem.setImageUrl(imagePath);
                                     }
-                                    lostItem.setImageUrl(imagePath);
                                 }
-                            }
-                            
-                            boolean updated = lostItemService.updateLostItem(lostItem);
-                            if (updated) {
-                                response.sendRedirect(request.getContextPath() + "/lost-items/detail?id=" + id + "&message=更新成功");
+                                
+                                boolean updated = lostItemService.updateLostItem(lostItem);
+                                if (updated) {
+                                    // 更新成功后跳转到失物列表页面，而不是详情页面
+                                    response.sendRedirect(request.getContextPath() + "/lost-items?message=更新成功");
+                                } else {
+                                    request.setAttribute("errorMessage", "更新失败");
+                                    request.setAttribute("lostItem", lostItem);
+                                    request.getRequestDispatcher("/edit-lost-item.jsp").forward(request, response);
+                                }
                             } else {
-                                request.setAttribute("errorMessage", "更新失败");
-                                request.setAttribute("lostItem", lostItem);
-                                request.getRequestDispatcher("/edit-lost-item.jsp").forward(request, response);
+                                // 用户没有权限编辑此信息
+                                response.sendRedirect(request.getContextPath() + "/lost-items?error=您没有权限编辑此信息");
                             }
                         } else {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "您没有权限编辑此信息");
+                            // 失物信息未找到
+                            response.sendRedirect(request.getContextPath() + "/lost-items?error=失物信息未找到");
                         }
                     } catch (NumberFormatException e) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "无效的物品ID");
+                        response.sendRedirect(request.getContextPath() + "/lost-items?error=无效的物品ID");
                     }
                 } else {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "缺少物品ID");

@@ -140,7 +140,7 @@
                             <c:if test="${not empty foundItem.imageUrl}">
                                 <div class="mt-2">
                                     <p>当前图片:</p>
-                                    <img src="${foundItem.imageUrl}" alt="当前图片" style="max-width: 200px; max-height: 200px;">
+                                    <img src="<%=request.getContextPath()%>/${foundItem.imageUrl}" alt="当前图片" style="max-width: 200px; max-height: 200px;">
                                 </div>
                             </c:if>
                         </div>
@@ -179,8 +179,8 @@
             body: formData
         }).then(response => {
             console.log('Response status:', response.status);
-            // 无论响应如何，都直接跳转到招领信息列表页面
-            window.location.href = '<%=request.getContextPath()%>/found-items';
+            // 更新成功后跳转到招领信息列表页面
+            window.location.href = '<%=request.getContextPath()%>/found-items?message=更新成功';
         }).catch(error => {
             console.error('Error:', error);
             alert('提交过程中发生错误，请稍后再试');
