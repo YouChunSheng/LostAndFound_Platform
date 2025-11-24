@@ -114,10 +114,10 @@
                 <div class="card-body">
                     <c:if test="${sessionScope.user != null && sessionScope.user.id == foundItem.userId}">
                         <a href="<%=request.getContextPath()%>/found-items/detail?action=edit&id=${foundItem.id}" class="btn btn-primary w-100 mb-2">编辑信息</a>
-                        <form action="<%=request.getContextPath()%>/found-items" method="post" style="display:inline;">
+                        <form id="userDeleteForm" action="<%=request.getContextPath()%>/found-items" method="post" style="display:inline;">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="${foundItem.id}">
-                            <button type="submit" class="btn btn-danger w-100" onclick="return confirm('确定要删除这条招领信息吗？')">删除信息</button>
+                            <button type="button" class="btn btn-danger w-100" onclick="submitUserDeleteForm()">删除信息</button>
                         </form>
                     </c:if>
                     <c:if test="${sessionScope.user != null && sessionScope.user.id != foundItem.userId && foundItem.status == 'unclaimed'}">
@@ -154,10 +154,10 @@
                                     <button type="submit" class="btn btn-secondary w-100" onclick="return confirm('确定要撤销这条招领信息的认领状态吗？')">撤销认领(管理员)</button>
                                 </form>
                             </c:if>
-                            <form action="<%=request.getContextPath()%>/admin/found-items" method="post" style="display:inline;">
+                            <form id="adminDeleteForm" action="<%=request.getContextPath()%>/found-items" method="post" style="display:inline;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="${foundItem.id}">
-                                <button type="submit" class="btn btn-danger w-100" onclick="return confirm('确定要删除这条招领信息吗？')">删除信息(管理员)</button>
+                                <button type="button" class="btn btn-danger w-100" onclick="submitAdminDeleteForm()">删除信息(管理员)</button>
                             </form>
                         </div>
                     </c:if>
@@ -233,6 +233,45 @@
                 } else {
                     window.location.reload();
                 }
+            }).catch(error => {
+                console.error('Error:', error);
+                window.location.href = '<%=request.getContextPath()%>/found-items';
+            });
+        }
+    }
+    
+    function submitAdminDeleteForm() {
+        if (confirm('确定要删除这条招领信息吗？')) {
+            const form = document.getElementById('adminDeleteForm');
+            const formData = new FormData(form);
+            
+            fetch('<%=request.getContextPath()%>/found-items', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    window.location.reload();
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                window.location.href = '<%=request.getContextPath()%>/found-items';
+            });
+        }
+    }
+    
+    function submitUserDeleteForm() {
+        if (confirm('确定要删除这条招领信息吗？')) {
+            const form = document.getElementById('userDeleteForm');
+            const formData = new FormData(form);
+            
+            fetch('<%=request.getContextPath()%>/found-items', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(response => {
+                // 删除成功后跳转到招领信息列表页面
+                window.location.href = '<%=request.getContextPath()%>/found-items?message=删除成功';
             }).catch(error => {
                 console.error('Error:', error);
                 window.location.href = '<%=request.getContextPath()%>/found-items';

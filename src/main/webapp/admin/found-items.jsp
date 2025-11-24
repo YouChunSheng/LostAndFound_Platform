@@ -101,7 +101,7 @@
                                                             onclick="return confirm('确定要撤销这条招领信息的认领状态吗？')">撤销认领</button>
                                                 </form>
                                             </c:if>
-                                            <form action="<%=request.getContextPath()%>/admin/found-items" method="post" style="display: inline;">
+                                            <form action="<%=request.getContextPath()%>/found-items" method="post" style="display: inline;">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id" value="${item.id}">
                                                 <button type="submit" class="btn btn-sm btn-danger" 

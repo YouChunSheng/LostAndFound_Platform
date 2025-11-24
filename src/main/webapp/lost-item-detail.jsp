@@ -114,10 +114,10 @@
                 <div class="card-body">
                     <c:if test="${sessionScope.user != null && sessionScope.user.id == lostItem.userId}">
                         <a href="<%=request.getContextPath()%>/lost-items/detail?action=edit&id=${lostItem.id}" class="btn btn-primary w-100 mb-2">编辑信息</a>
-                        <form action="<%=request.getContextPath()%>/lost-items/detail" method="post" style="display:inline;">
+                        <form id="userDeleteForm" action="<%=request.getContextPath()%>/lost-items/detail" method="post" style="display:inline;">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="${lostItem.id}">
-                            <button type="submit" class="btn btn-danger w-100" onclick="return confirm('确定要删除这条失物信息吗？')">删除信息</button>
+                            <button type="button" class="btn btn-danger w-100" onclick="submitUserDeleteForm()">删除信息</button>
                         </form>
                     </c:if>
                     <c:if test="${sessionScope.user != null && sessionScope.user.id != lostItem.userId && lostItem.status == 'unclaimed'}">
@@ -141,11 +141,11 @@
                         <div class="mt-3">
                             <h6>管理员操作</h6>
                             <a href="<%=request.getContextPath()%>/lost-items/detail?action=edit&id=${lostItem.id}" class="btn btn-warning w-100 mb-2">编辑信息(管理员)</a>
-                            <form action="<%=request.getContextPath()%>/admin/lost-items" method="post" style="display:inline;">
-                                <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="id" value="${lostItem.id}">
-                                <button type="submit" class="btn btn-danger w-100" onclick="return confirm('确定要删除这条失物信息吗？')">删除信息(管理员)</button>
-                            </form>
+                        	<form id="adminDeleteForm" action="<%=request.getContextPath()%>/lost-items" method="post" style="display:inline;">
+                        	    <input type="hidden" name="action" value="delete">
+                        	    <input type="hidden" name="id" value="${lostItem.id}">
+                        	    <button type="button" class="btn btn-danger w-100" onclick="submitAdminDeleteForm()">删除信息(管理员)</button>
+                        	</form>
                         </div>
                     </c:if>
                 </div>
@@ -199,6 +199,45 @@
                 } else {
                     window.location.reload();
                 }
+            }).catch(error => {
+                console.error('Error:', error);
+                window.location.href = '<%=request.getContextPath()%>/lost-items';
+            });
+        }
+    }
+    
+    function submitAdminDeleteForm() {
+        if (confirm('确定要删除这条失物信息吗？')) {
+            const form = document.getElementById('adminDeleteForm');
+            const formData = new FormData(form);
+            
+            fetch('<%=request.getContextPath()%>/lost-items', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    window.location.reload();
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                window.location.href = '<%=request.getContextPath()%>/lost-items';
+            });
+        }
+    }
+    
+    function submitUserDeleteForm() {
+        if (confirm('确定要删除这条失物信息吗？')) {
+            const form = document.getElementById('userDeleteForm');
+            const formData = new FormData(form);
+            
+            fetch('<%=request.getContextPath()%>/lost-items/detail', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(response => {
+                // 删除成功后跳转到失物信息列表页面
+                window.location.href = '<%=request.getContextPath()%>/lost-items?message=删除成功';
             }).catch(error => {
                 console.error('Error:', error);
                 window.location.href = '<%=request.getContextPath()%>/lost-items';

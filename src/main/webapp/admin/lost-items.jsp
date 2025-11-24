@@ -76,7 +76,7 @@
                         <td>${item.contactInfo}</td>
                         <td>${item.status}</td>
                         <td>
-                            <form action="<%=request.getContextPath()%>/admin/lost-items" method="post" style="display: inline;">
+                            <form action="<%=request.getContextPath()%>/lost-items" method="post" style="display: inline;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="${item.id}">
                                 <button type="submit" class="btn btn-danger btn-sm" 

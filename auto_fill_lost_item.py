@@ -27,10 +27,15 @@ CONTACT_INFOS = [
     "13987654321", "wangwu@example.com"
 ]
 
-def get_next_photo_path(photo_dir="photo"):
+# 全局变量用于跟踪已使用的图片
+used_photos = []
+
+def get_next_photo_path(photo_dir="pic"):
     """
-    获取photo目录下按阿拉伯数字升序排列的下一个图片路径
+    按数字顺序获取pic目录下的图片路径，循环使用所有图片
     """
+    global used_photos
+    
     if not os.path.exists(photo_dir):
         print(f"目录 {photo_dir} 不存在")
         return None
@@ -42,10 +47,29 @@ def get_next_photo_path(photo_dir="photo"):
         print(f"目录 {photo_dir} 中没有图片文件")
         return None
     
-    # 按数字排序
-    photo_files.sort(key=lambda x: int(os.path.splitext(x)[0]) if x.split('.')[0].isdigit() else 0)
+    # 按文件名中的数字排序
+    def extract_number(filename):
+        # 提取文件名中的数字部分
+        numbers = ''.join(filter(str.isdigit, filename))
+        return int(numbers) if numbers else 0
     
-    # 返回第一个图片的路径
+    photo_files.sort(key=extract_number)
+    
+    # 找到尚未使用的图片
+    available_photos = [p for p in photo_files if p not in used_photos]
+    
+    # 如果所有图片都已使用，则重置列表
+    if not available_photos:
+        used_photos = []
+        available_photos = photo_files[:]
+    
+    # 选择下一张可用图片
+    if available_photos:
+        selected_photo = available_photos[0]
+        used_photos.append(selected_photo)
+        return os.path.join(photo_dir, selected_photo)
+    
+    # 默认返回第一张图片
     return os.path.join(photo_dir, photo_files[0])
 
 def generate_random_datetime():
@@ -66,7 +90,7 @@ def generate_random_datetime():
     print(f"生成的时间字符串: {time_str}")  # 调试信息
     return time_str
 
-def auto_fill_lost_item_form(username="youchunsheng", password="123456", base_url="https://localhost:8090/lostandfound"):
+def auto_fill_lost_item_form(username="youchunsheng", password="123456", base_url="https://localhost:8090/LostAndFound_Platform"):
     """
     自动填写失物信息表单
     """
@@ -83,6 +107,10 @@ def auto_fill_lost_item_form(username="youchunsheng", password="123456", base_ur
     # 如果需要无头模式（不显示浏览器窗口），取消下面这行注释
     # chrome_options.add_argument("--headless")
     
+    # 添加实验性选项以更好地处理SSL证书错误
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    
     try:
         # 初始化WebDriver（请根据您的Chrome版本调整chromedriver路径）
         driver = webdriver.Chrome(options=chrome_options)
@@ -91,7 +119,7 @@ def auto_fill_lost_item_form(username="youchunsheng", password="123456", base_ur
         print("=== 开始登录 ===")
         # 访问登录页面
         driver.get(f"{base_url}/login.jsp")
-        time.sleep(2)
+        time.sleep(3)  # 增加等待时间
         print(f"当前页面URL: {driver.current_url}")
         
         # 检查页面标题和基本元素，确认页面加载
@@ -101,20 +129,47 @@ def auto_fill_lost_item_form(username="youchunsheng", password="123456", base_ur
         except:
             print("无法获取页面标题")
         
+        # 等待并查找登录表单元素
+        try:
+            username_element = wait.until(EC.presence_of_element_located((By.ID, "username")))
+            password_element = wait.until(EC.presence_of_element_located((By.ID, "password")))
+            print("成功找到登录表单元素")
+        except Exception as e:
+            print(f"等待登录表单元素超时: {e}")
+            # 尝试打印页面源码以调试
+            print("页面源码:")
+            print(driver.page_source[:1000])  # 打印前1000个字符
+            raise e
+        
         # 填写登录表单（使用指定账户）
-        driver.find_element(By.ID, "username").send_keys(username)
-        driver.find_element(By.ID, "password").send_keys(password)
+        username_element.send_keys(username)
+        password_element.send_keys(password)
         
         # 提交登录表单
-        driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
-        time.sleep(3)
+        try:
+            submit_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']")))
+            submit_button.click()
+            print("成功点击登录按钮")
+        except Exception as e:
+            print(f"点击登录按钮失败: {e}")
+            # 尝试使用回车键提交表单
+            from selenium.webdriver.common.keys import Keys
+            password_element.send_keys(Keys.RETURN)
+            print("尝试使用回车键提交表单")
+        time.sleep(5)  # 增加等待时间确保页面加载完成
         
         # 检查是否登录成功
         print(f"登录后页面URL: {driver.current_url}")
-        if "login=success" in driver.current_url or "index.jsp" in driver.current_url:
+        if "login.jsp" not in driver.current_url:
             print("登录成功")
         else:
             print("登录可能失败，继续尝试访问发布页面...")
+            # 检查是否有错误信息
+            try:
+                error_element = driver.find_element(By.CSS_SELECTOR, ".alert.alert-danger")
+                print(f"登录错误信息: {error_element.text}")
+            except:
+                print("未找到明确的错误信息")
         
         # 循环添加20件物品
         for i in range(20):
@@ -159,11 +214,10 @@ def auto_fill_lost_item_form(username="youchunsheng", password="123456", base_ur
             lost_time = generate_random_datetime()
             time_input = driver.find_element(By.ID, "lostTime")
             time_input.clear()
+            # 分步输入时间以避免格式问题
             time_input.send_keys(lost_time)
+            time.sleep(1)  # 等待输入完成
             print(f"填写时间: {lost_time}")
-            
-            # 添加延迟以便观察时间输入
-            time.sleep(2)
             
             # 检查时间是否正确输入
             entered_time = time_input.get_attribute('value')

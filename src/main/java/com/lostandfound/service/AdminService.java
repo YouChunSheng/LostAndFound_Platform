@@ -66,4 +66,27 @@ public class AdminService {
             return statement.executeUpdate() > 0;
         }
     }
+    
+    // Batch delete found items
+    public boolean batchDeleteFoundItems(int[] itemIds) throws SQLException {
+        if (itemIds == null || itemIds.length == 0) {
+            return false;
+        }
+        
+        StringBuilder sql = new StringBuilder("DELETE FROM found_items WHERE id IN (");
+        for (int i = 0; i < itemIds.length; i++) {
+            sql.append("?");
+            if (i < itemIds.length - 1) {
+                sql.append(",");
+            }
+        }
+        sql.append(")");
+        
+        try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < itemIds.length; i++) {
+                statement.setInt(i + 1, itemIds[i]);
+            }
+            return statement.executeUpdate() > 0;
+        }
+    }
 }

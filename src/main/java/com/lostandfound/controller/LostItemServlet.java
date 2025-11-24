@@ -221,41 +221,34 @@ public class LostItemServlet extends HttpServlet {
                 if (idParam != null && !idParam.isEmpty()) {
                     try {
                         int id = Integer.parseInt(idParam);
-                        boolean deleted = lostItemService.deleteLostItemByIdAndUserId(id, currentUser.getId());
-                        if (deleted) {
-                            // Check if the user is admin and came from admin panel
-                            String referer = request.getHeader("Referer");
-                            if (referer != null && referer.contains("/admin/")) {
-                                response.sendRedirect(request.getContextPath() + "/admin/lost-items?message=删除成功");
-                            } else {
-                                response.sendRedirect(request.getContextPath() + "/lost-items?message=删除成功");
-                            }
+                        // 检查用户是否为管理员
+                        boolean isAdmin = "admin".equals(currentUser.getRole());
+                        boolean deleted;
+                        
+                        if (isAdmin) {
+                            // 管理员可以删除任何失物信息
+                            deleted = lostItemService.deleteLostItemById(id);
                         } else {
-                            // Check if the user is admin and came from admin panel
-                            String referer = request.getHeader("Referer");
-                            if (referer != null && referer.contains("/admin/")) {
-                                response.sendRedirect(request.getContextPath() + "/admin/lost-items?error=删除失败，您可能不是该信息的所有者");
+                            // 普通用户只能删除自己的失物信息
+                            deleted = lostItemService.deleteLostItemByIdAndUserId(id, currentUser.getId());
+                        }
+                        
+                        if (deleted) {
+                            // 管理员和普通用户都跳转到失物信息列表页面
+                            response.sendRedirect(request.getContextPath() + "/lost-items?message=删除成功");
+                        } else {
+                            // 删除失败
+                            if (isAdmin) {
+                                response.sendRedirect(request.getContextPath() + "/lost-items?error=删除失败");
                             } else {
                                 response.sendRedirect(request.getContextPath() + "/lost-items?error=删除失败，您可能不是该信息的所有者");
                             }
                         }
                     } catch (NumberFormatException e) {
-                        // Check if the user is admin and came from admin panel
-                        String referer = request.getHeader("Referer");
-                        if (referer != null && referer.contains("/admin/")) {
-                            response.sendRedirect(request.getContextPath() + "/admin/lost-items?error=无效的物品ID");
-                        } else {
-                            response.sendRedirect(request.getContextPath() + "/lost-items?error=无效的物品ID");
-                        }
+                        response.sendRedirect(request.getContextPath() + "/lost-items?error=无效的物品ID");
                     }
                 } else {
-                    // Check if the user is admin and came from admin panel
-                    String referer = request.getHeader("Referer");
-                    if (referer != null && referer.contains("/admin/")) {
-                        response.sendRedirect(request.getContextPath() + "/admin/lost-items?error=缺少物品ID");
-                    } else {
-                        response.sendRedirect(request.getContextPath() + "/lost-items?error=缺少物品ID");
-                    }
+                    response.sendRedirect(request.getContextPath() + "/lost-items?error=缺少物品ID");
                 }
             } else if ("edit".equals(action)) {
                 // Show edit form
