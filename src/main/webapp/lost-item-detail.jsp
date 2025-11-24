@@ -121,7 +121,6 @@
                         </form>
                     </c:if>
                     <c:if test="${sessionScope.user != null && sessionScope.user.id != lostItem.userId && lostItem.status == 'unclaimed'}">
-                        <a href="<%=request.getContextPath()%>/lost-items/detail?action=match&id=${lostItem.id}" class="btn btn-success w-100 mb-2">我捡到了这个物品</a>
                         <form id="claimForm" style="display:inline;">
                             <input type="hidden" name="action" value="claim">
                             <input type="hidden" name="id" value="${lostItem.id}">
